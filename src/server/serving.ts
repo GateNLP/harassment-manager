@@ -53,6 +53,7 @@ import {
   hideTwitterReplies,
   muteTwitterUsers,
 } from './middleware/twitter.middleware';
+import {getElkTweets} from "./middleware/elk.middleware";
 
 interface Logger {
   write(s: string): void;
@@ -176,6 +177,10 @@ export class Server {
           console.log(`Error scoring text ${req.body.comment}: ${e}`);
           res.status(e.code).send(e);
         });
+    });
+
+    this.app.post('/get_elk_tweets', (req, res) =>{
+      getElkTweets(req, res)
     });
 
     this.app.post('/get_tweets', (req, res) => {

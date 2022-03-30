@@ -33,6 +33,7 @@ import { ReportPdfComponent } from './report-pdf/report-pdf.component';
 import { ReviewReportComponent } from './review-report/review-report.component';
 import { ShareReportComponent } from './share-report/share-report.component';
 import { WelcomePageComponent } from './welcome-page/welcome-page.component';
+import {HomePageGateComponent} from "./home-page-gate/home-page.component";
 
 /**
  * Custom RouteReuseStrategy that reuses the CreateReportComponent so that the
@@ -163,6 +164,11 @@ export const routes: Routes = [
     path: '',
     component: WelcomePageComponent,
     pathMatch: 'full',
+  },
+  {
+    path: 'gate-home',
+    component: HomePageGateComponent,
+    data: { title: 'Home Page' },
   },
 ];
 

@@ -167,6 +167,7 @@ export interface TweetObject {
   retweet_count?: number;
   retweeted_status?: TweetObject;
   source?: string;
+  abuse?: AbuseObject[];
 }
 
 interface TwitterUser {
@@ -239,6 +240,89 @@ interface TweetUrl {
 export interface TweetHashtag {
   text: string;
   indices: Indices;
+}
+
+/*GATE ELK INTERFACES*/
+export interface GetTweetsElkRequest {
+  nextPageToken?: string;
+  fromDate: string; // yyyymmddhhmm format is expected here.
+  toDate: string; // yyyymmddhhmm format is expected here.
+  ids: string[];
+}
+
+export interface GetTweetsElkResponse {
+  body: GetTweetsElkBody;
+}
+
+export interface GetTweetsElkBody {
+  hits: GetTweetsElkHits;
+}
+
+export interface GetTweetsElkHits {
+  total: ElkTotal;
+  max_score: number;
+  hits: ElkHits[];
+}
+
+export interface  ElkTotal {
+  value: number;
+  relation: string;
+}
+
+export  interface ElkHits {
+  _source: ElkSource;
+}
+
+export interface ElkSource {
+  entities: ElkEntities;
+}
+
+export interface ElkEntities {
+  Abuse: AbuseObject[];
+  Tweet: TweetObjectElk[];
+}
+
+export interface AbuseObject{
+  strength: string;
+  string: string;
+  confidence: string;
+  rule: string;
+  language: string;
+  minorType: string;
+  type: string;
+  target: string;
+  majorType: string;
+  countRule: string;
+  normalised_string: string;
+  AbuseTermRule: string;
+}
+
+export interface TweetObjectElk {
+  created_at?: string;
+  id_str: string;
+  string: string;
+  user?: TwitterUser;
+  // From the documentation: This entities object does include a media
+  // attribute, but its implementation in the entities section is only
+  // completely accurate for Tweets with a single photo. For all Tweets
+  // with more than one photo, a video, or animated GIF, the reader is
+  // directed to the extended_entities section.
+  entities?: TweetEntities;
+
+  display_text_range?: number[];
+  truncated?: boolean;
+  extended_tweet?: ExtendedTweet;
+
+  // Added based on observation of API results.
+  extended_entities?: TweetEntities;
+  favorite_count?: number;
+  favorited?: boolean;
+  in_reply_to_status_id?: string;
+  lang?: string;
+  reply_count?: number;
+  retweet_count?: number;
+  retweeted_status?: TweetObject;
+  source?: string;
 }
 
 // For tweets above 140 characters.

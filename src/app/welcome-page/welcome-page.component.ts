@@ -48,7 +48,7 @@ export class WelcomePageComponent {
     this.oauthApiService.authenticateTwitter().then(async () => {
       this.liveAnnouncer.announce('Logged in. Exited Twitter login page.');
       await this.firestoreService.createUserDocument();
-      this.router.navigate(['/home']);
+      this.router.navigate(['/gate-home']);
     });
   }
 }

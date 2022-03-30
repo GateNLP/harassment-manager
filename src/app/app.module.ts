@@ -81,6 +81,7 @@ import { FindSupportComponent } from './find-support/find-support.component';
 import { FooterComponent } from './footer/footer.component';
 import { HelpCenterComponent } from './help-center/help-center.component';
 import { HomePageComponent } from './home-page/home-page.component';
+import { HomePageGateComponent } from './home-page-gate/home-page.component';
 import { IntroStepperComponent } from './intro-stepper/intro-stepper.component';
 import { LoadingDialogComponent } from './loading-dialog/loading-dialog.component';
 import { PdfService } from './pdf_service';
@@ -101,6 +102,7 @@ import { ToxicityRangeSelectorDialogComponent } from './toxicity-range-selector-
 import { TweetImageComponent } from './tweet-image/tweet-image.component';
 import { TwitterApiService } from './twitter_api.service';
 import { WelcomePageComponent } from './welcome-page/welcome-page.component';
+import {TwitterElkApiService} from "./twitter_elk_api.service";
 
 @NgModule({
   declarations: [
@@ -125,6 +127,7 @@ import { WelcomePageComponent } from './welcome-page/welcome-page.component';
     FooterComponent,
     HelpCenterComponent,
     HomePageComponent,
+    HomePageGateComponent,
     HrefOnlyDownloadDirective,
     IntroStepperComponent,
     LoadingDialogComponent,
@@ -188,6 +191,7 @@ import { WelcomePageComponent } from './welcome-page/welcome-page.component';
     PerspectiveApiService,
     SheetsApiService,
     TwitterApiService,
+    TwitterElkApiService,
     // See https://momentjs.com/docs/#/displaying/format/
     // Formats starting with 'l' and 'L' are localized formats.
     {
