@@ -78,6 +78,7 @@ import { SocialMediaItemService } from '../social-media-item.service';
 import { ToxicityRangeSelectorDialogComponent } from '../toxicity-range-selector-dialog/toxicity-range-selector-dialog.component';
 
 enum DateFilterName {
+  LAST_TWENTY_YEARS = 'Last twenty years',
   YESTERDAY = 'Since yesterday',
   LAST_TWO_DAYS = 'Last two days',
   LAST_WEEK = 'Last week',
@@ -250,6 +251,7 @@ export class CreateReportComponent implements OnInit, AfterViewInit {
   pageSize = PAGE_SIZE;
 
   dateDropdownOptions: DateFilterDropdownOption[] = [
+    { displayText: DateFilterName.LAST_TWENTY_YEARS, numDays: 7300 },
     { displayText: DateFilterName.YESTERDAY, numDays: 1 },
     { displayText: DateFilterName.LAST_TWO_DAYS, numDays: 2 },
     { displayText: DateFilterName.LAST_WEEK, numDays: 7 },
@@ -457,9 +459,10 @@ export class CreateReportComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.error = null;
     this.socialMediaItemsService
-      .fetchItems(
+      .fetchItemsGate(
         this.dateFilter.startDateTimeMs,
-        this.dateFilter.endDateTimeMs
+        this.dateFilter.endDateTimeMs,
+          ['1232269918856515584', '1243786506579271680']
       )
       .pipe(take(1))
       .subscribe(

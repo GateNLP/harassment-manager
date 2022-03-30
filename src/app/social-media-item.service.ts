@@ -35,6 +35,7 @@ import { stripOutEntitiesFromItemText } from './common/social_media_item_utils';
 import { OauthApiService } from './oauth_api.service';
 import { PerspectiveApiService } from './perspectiveapi.service';
 import { TwitterApiService } from './twitter_api.service';
+import {TwitterElkApiService} from "./twitter_elk_api.service";
 
 export interface RequestCache {
   // The key to the cache is startDateTimeMs + '_' + endDateTimeMs.
@@ -62,8 +63,10 @@ export class SocialMediaItemService {
   constructor(
     private oauthApiService: OauthApiService,
     private perspectiveApiService: PerspectiveApiService,
-    private twitterApiService: TwitterApiService
-  ) {
+    private twitterApiService: TwitterApiService,
+    private twitterElkApiService: TwitterElkApiService
+
+) {
     this.oauthApiService.twitterSignInChange.subscribe(signedIn => {
       this.signedInWithTwitter = signedIn;
       if (!signedIn) {
@@ -132,6 +135,52 @@ export class SocialMediaItemService {
         // minute of time.
         toDate: formatTimestamp(endDateTimeMs - 60000),
       })
+    ).pipe(map((response: GetTweetsResponse) => response.tweets));
+  }
+
+  fetchItemsGate(
+      startDateTimeMs: number,
+      endDateTimeMs: number,
+      ids: string[]
+  ): Observable<Array<ScoredItem<SocialMediaItem>>> {
+
+    const firstLoad = Object.keys(this.requestCache).length === 0;
+    const cacheKey = this.getRequestCacheKey(startDateTimeMs, endDateTimeMs);
+    if (this.requestCache.hasOwnProperty(cacheKey)) {
+      return this.requestCache[cacheKey];
+    }
+
+    const result = this.fetchTweetsGate(startDateTimeMs, endDateTimeMs, ids).pipe(
+        switchMap((items: SocialMediaItem[]) => {
+          this.totalCommentFetchCount += items.length;
+          return this.scoreItems(items);
+        }),
+        shareReplay(1),
+        catchError(err => {
+          delete this.requestCache[cacheKey];
+          throw err;
+        })
+    );
+    // Store the Observable in a cache so that we can reuse it if someone else
+    // makes the same request.
+    this.requestCache[cacheKey] = result;
+    return result;
+  }
+
+  private fetchTweetsGate(
+      startDateTimeMs: number,
+      endDateTimeMs: number,
+      ids: string[]
+  ): Observable<Tweet[]> {
+    return from(
+        this.twitterElkApiService.getTweets({
+          fromDate: formatTimestamp(startDateTimeMs),
+          // Subtract 1 minute from the end time because the Twitter API
+          // sometimes returns an error if we request data for the most recent
+          // minute of time.
+          toDate: formatTimestamp(endDateTimeMs - 60000),
+          ids
+        })
     ).pipe(map((response: GetTweetsResponse) => response.tweets));
   }
 

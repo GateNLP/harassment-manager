@@ -62,7 +62,6 @@ import {
 } from '../recommended-report-card/recommended-report-card.component';
 import { getRouterLinkForReportStep, ReportService } from '../report.service';
 import { SocialMediaItemService } from '../social-media-item.service';
-import {SocialMediaElkItemService} from "../social-media-elk-item.service";
 
 // Width of a card + padding.
 const SCROLL_INCREMENT = 444;
@@ -157,7 +156,6 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy {
     private readonly router: Router,
     private readonly scrollStrategyOptions: ScrollStrategyOptions,
     private readonly socialMediaItemService: SocialMediaItemService,
-    private readonly socialMediaElkItemService: SocialMediaElkItemService,
     private readonly viewContainerRef: ViewContainerRef,
     private readonly snackBar: MatSnackBar,
     private readonly googleAnalyticsService: GoogleAnalyticsService
@@ -296,14 +294,13 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy {
 
   //todo: i mean...front or back end alternative to this approach needed
   getRecommendedReports() {
-    console.log("okay, i am here!")
     const dateFilter = buildDateFilterForNDays(
       new Date(this.dateFilterService.getStartTimeMs()),
       1
     );
     this.loadingRecommendedReports = true;
-    this.socialMediaElkItemService
-      .fetchItems(dateFilter.startDateTimeMs, dateFilter.endDateTimeMs, ['1232269918856515584', '1243786506579271680'])
+    this.socialMediaItemService
+      .fetchItemsGate(dateFilter.startDateTimeMs, dateFilter.endDateTimeMs, ['1232269918856515584', '1243786506579271680'])
       .subscribe(
         comments => {
           this.closeLoadingDialog();
