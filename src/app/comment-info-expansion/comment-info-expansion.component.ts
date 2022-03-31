@@ -15,7 +15,7 @@
  */
 
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { SelectableItem, SocialMediaItem, Tweet } from '../../common-types';
+import {AbuseObject, SelectableItem, SocialMediaItem, Tweet} from '../../common-types';
 
 @Component({
   selector: 'app-comment-info-expansion',
@@ -36,5 +36,11 @@ export class CommentInfoExpansionComponent implements OnChanges {
 
   formatScore(score: number): number {
     return Math.round(score * 100);
+  }
+
+  formatAbuseTypes(abuseObjects : AbuseObject[]): string {
+    let abuseSet = new Set<string>();
+    abuseObjects.forEach(abuseObj => abuseSet.add(abuseObj.type.charAt(0).toUpperCase() + abuseObj.type.slice(1)))
+    return Array.from(abuseSet).sort().join(", ")
   }
 }

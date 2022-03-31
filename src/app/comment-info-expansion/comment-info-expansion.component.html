@@ -37,6 +37,10 @@
         <div class="score">Identity Attack - {{formatScore(comment.scores['IDENTITY_ATTACK'])}}%</div>
       </ng-container>
     </div>
+    <div class="detailed-abuse-info" *ngIf="tweet && tweet.item && tweet.item.abuse">
+      <h2>Abuse types:</h2>
+      <div>{{formatAbuseTypes(tweet.item.abuse)}}</div>
+    </div>
     <div class="detailed-influence-info twitter" *ngIf="tweet">
       <h2>Impact summary:</h2>
       <div class="metric" *ngIf="tweet.item.retweet_count !== undefined">
