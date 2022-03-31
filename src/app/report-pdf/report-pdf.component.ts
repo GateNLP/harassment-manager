@@ -17,7 +17,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatTable } from '@angular/material/table';
 import * as moment from 'moment';
-import { ScoredItem, Tweet } from '../../common-types';
+import {AbuseObject, ScoredItem, Tweet} from '../../common-types';
 import {
   formatAttributeScore,
   formatCount,
@@ -52,14 +52,14 @@ export class ReportPdfComponent {
     'author',
     'time posted',
     'tweet id',
+    'abuse type',
     'toxicity',
     'severe toxicity',
     'insult',
     'profanity',
     'threat',
     'identity attack',
-    'retweets',
-    'likes twitter',
+    'retweets likes',
     'comments',
   ];
   dataSource = this.entries;
@@ -115,5 +115,15 @@ export class ReportPdfComponent {
 
   getUsername() {
     return this.platform === 'Twitter' ? `@${this.username}` : this.username;
+  }
+
+  getAbuseTypes() {
+    let abuseSet = new Set<string>();
+
+    this.entries.forEach((tweet)=>{
+      tweet.item.abuse?.forEach(abuse=>{abuseSet.add(abuse.type)})
+    });
+
+    return Array.from(abuseSet).sort().join(", ");
   }
 }

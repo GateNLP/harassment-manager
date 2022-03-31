@@ -20,6 +20,7 @@ import jsPDF from 'jspdf';
 import autoTable, { CellHookData, Styles } from 'jspdf-autotable';
 import { BehaviorSubject } from 'rxjs';
 import {
+  AbuseObject,
   CreatePdfRequest,
   CreatePdfResponse,
   ScoredItem,
@@ -76,6 +77,8 @@ const DISPLAYED_COLUMNS_TWITTER: string[] = [
   'Time Posted',
   'Tweet ID',
   BORDER_COLUMN,
+  'Abuse Type',
+  BORDER_COLUMN,
   'Toxicity',
   'Severe Toxicity',
   'Insult',
@@ -83,8 +86,7 @@ const DISPLAYED_COLUMNS_TWITTER: string[] = [
   'Threat',
   'Identity Attack',
   BORDER_COLUMN,
-  'Retweets',
-  'Likes',
+  'Retweets/Likes',
   'Comments',
 ];
 const COLUMN_STYLES_TWITTER: {
@@ -97,15 +99,15 @@ const COLUMN_STYLES_TWITTER: {
   4: { cellWidth: 23 },
   5: { cellWidth: 17 },
   6: { cellWidth: 1, fillColor: TABLE_ACCENT_COLOR },
-  7: { cellWidth: 14, halign: 'center' },
-  8: { cellWidth: 14, halign: 'center' },
+  7: { cellWidth: 17 },
+  8: { cellWidth: 1, fillColor: TABLE_ACCENT_COLOR },
   9: { cellWidth: 14, halign: 'center' },
   10: { cellWidth: 14, halign: 'center' },
   11: { cellWidth: 14, halign: 'center' },
   12: { cellWidth: 14, halign: 'center' },
-  13: { cellWidth: 1, fillColor: TABLE_ACCENT_COLOR },
+  13: { cellWidth: 14, halign: 'center' },
   14: { cellWidth: 14, halign: 'center' },
-  15: { cellWidth: 14, halign: 'center' },
+  15: { cellWidth: 1, fillColor: TABLE_ACCENT_COLOR },
   16: { cellWidth: 14, halign: 'center' },
   17: { cellWidth: 14, halign: 'center' },
 };
@@ -120,6 +122,10 @@ export function formatAttributeScore(score?: number): string {
   } else {
     return `${Math.round(score * 100)}`;
   }
+}
+
+export function formatAbuseTypes(abuseOject: AbuseObject[]): string {
+  return [...new Set(abuseOject.map(abuse => abuse.type))].sort().join(", ")
 }
 
 export function formatCount(count?: number): string {
@@ -149,6 +155,7 @@ export function getTimePosted(createdTime?: string): string {
 export function getAuthorUrl(url?: string): string {
   return url || '';
 }
+
 
 export function formatHashtags(item: Tweet): string {
   // In some languages tweets are being truncated after 140 characters instead
@@ -256,6 +263,8 @@ export class PdfService {
       entry.item.authorName || 'missing author name',
       getTimePosted(String(entry.item.date)),
       entry.item.id_str,
+      BORDER_COLUMN,
+      formatAbuseTypes(entry.item.abuse ? entry.item.abuse : []),
       BORDER_COLUMN,
       formatAttributeScore(entry.scores.TOXICITY),
       formatAttributeScore(entry.scores.SEVERE_TOXICITY),
@@ -373,7 +382,7 @@ export class PdfService {
     const columnStyles = COLUMN_STYLES_TWITTER;
     const displayedRowText = tableBodyContent.displayedRowText;
     doc.addPage();
-    doc.addImage('pdf_table_header.png', 'PNG', 14, 10, 270, 23);
+    doc.addImage('pdf_table_header.png', 'PNG', 14, 10, 274, 23);
     autoTable(doc, {
       theme: 'grid',
       // Shift the table down on the first page so the inserted image isn't covered.

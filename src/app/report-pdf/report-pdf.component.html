@@ -39,6 +39,8 @@
       <div>{{getDateRangeString()}}</div>
       <div class="summary-label">Toxicity:</div>
       <div>{{computeReportSummary()}}</div>
+      <div class="summary-label">Abuse types:</div>
+      <div>{{getAbuseTypes()}}</div>
       <div class="summary-label">Reported Due to:</div>
       <div>{{reportReasons.join('; ')}}</div>
       <div class="summary-label">Additional Context:</div>
@@ -100,11 +102,11 @@
           {{element.item.id_str }}
         </td>
       </ng-container>
-      <ng-container matColumnDef="comment id">
+      <ng-container matColumnDef="abuse type">
         <th mat-header-cell class="medium-col" *matHeaderCellDef> Comment ID </th>
         <td mat-cell [class.page-break-cell]="element.item.text === ''"
                      *matCellDef="let element">
-          {{element.item.id_str }}
+          {{element.item.abuse}}
         </td>
       </ng-container>
 
@@ -157,20 +159,12 @@
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="retweets">
-        <th mat-header-cell  class="small-col" *matHeaderCellDef> Retweets </th>
+      <ng-container matColumnDef="retweets likes">
+        <th mat-header-cell  class="small-col" *matHeaderCellDef> Retweets/Likes </th>
         <td mat-cell [class.page-break-cell]="element.item.text === ''"
-                     class="small-col"
-                     *matCellDef="let element">
-          {{formatCount(element.item.retweet_count)}}
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="likes twitter">
-        <th mat-header-cell  class="small-col" *matHeaderCellDef> Likes </th>
-        <td mat-cell [class.page-break-cell]="element.item.text === ''"
-                     class="small-col"
-                     *matCellDef="let element">
-          {{formatCount(element.item.favorite_count)}}
+            class="small-col"
+            *matCellDef="let element">
+          {{formatCount(element.item.retweet_count)}}/{{formatCount(element.item.favorite_count)}}
         </td>
       </ng-container>
       <ng-container matColumnDef="comments">
