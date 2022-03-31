@@ -36,7 +36,7 @@ export class ReviewReportComponent {
   commentsForReport: Array<ScoredItem<SocialMediaItem>> = [];
   usersInReport = new Map<string, number>();
   toxicityTypes: Set<string> = new Set<string>();
-  abuseTypes: Set<string> = new Set<string>();
+  abuseTypes: string[] = []
   averageToxicity = 0;
 
   reportReasonOptions: string[] = [];
@@ -109,10 +109,9 @@ export class ReviewReportComponent {
 
   computeReportSummary() {
     this.toxicityTypes = new Set<string>();
-    this.abuseTypes = new Set<string>();
     this.usersInReport.clear();
     this.toxicityTypes.clear();
-    this.abuseTypes.clear();
+    this.abuseTypes = [];
 
     let sum = 0;
     for (const comment of this.commentsForReport) {
@@ -167,9 +166,7 @@ export class ReviewReportComponent {
     this.reportService.setContext(this.context);
   }
 
-  formatAbuseTypes(abuseObjects : AbuseObject[]): Set<string> {
-    let abuseSet = new Set<string>();
-    abuseObjects.forEach(abuseObj => abuseSet.add(abuseObj.type.charAt(0).toUpperCase() + abuseObj.type.slice(1)))
-    return abuseSet;
+  formatAbuseTypes(abuseObjects : AbuseObject[]): string[] {
+    return [...new Set(abuseObjects.map(abuse => abuse.type))].sort()
   }
 }

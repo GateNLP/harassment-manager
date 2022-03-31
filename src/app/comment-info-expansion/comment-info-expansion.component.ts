@@ -39,8 +39,6 @@ export class CommentInfoExpansionComponent implements OnChanges {
   }
 
   formatAbuseTypes(abuseObjects : AbuseObject[]): Array<string> {
-    let abuseSet = new Set<string>();
-    abuseObjects.forEach(abuseObj => abuseSet.add(abuseObj.type.charAt(0).toUpperCase() + abuseObj.type.slice(1)))
-    return Array.from(abuseSet).sort()
+    return [...new Set(abuseObjects.map(abuse => abuse.type))].sort()
   }
 }
