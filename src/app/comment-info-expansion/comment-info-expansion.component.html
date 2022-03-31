@@ -39,7 +39,7 @@
     </div>
     <div class="detailed-abuse-info" *ngIf="tweet && tweet.item && tweet.item.abuse">
       <h2>Abuse types:</h2>
-      <div>{{formatAbuseTypes(tweet.item.abuse)}}</div>
+      <div *ngFor="let type of formatAbuseTypes(tweet.item.abuse)">{{type}}</div>
     </div>
     <div class="detailed-influence-info twitter" *ngIf="tweet">
       <h2>Impact summary:</h2>

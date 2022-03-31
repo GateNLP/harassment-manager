@@ -19,7 +19,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
-import { ScoredItem, SocialMediaItem } from '../../common-types';
+import {AbuseObject, ScoredItem, SocialMediaItem} from '../../common-types';
 import { ClearReportDialogComponent } from '../clear-report-dialog/clear-report-dialog.component';
 import { OauthApiService } from '../oauth_api.service';
 import { ReportService } from '../report.service';
@@ -36,6 +36,7 @@ export class ReviewReportComponent {
   commentsForReport: Array<ScoredItem<SocialMediaItem>> = [];
   usersInReport = new Map<string, number>();
   toxicityTypes: Set<string> = new Set<string>();
+  abuseTypes: Set<string> = new Set<string>();
   averageToxicity = 0;
 
   reportReasonOptions: string[] = [];
@@ -108,8 +109,11 @@ export class ReviewReportComponent {
 
   computeReportSummary() {
     this.toxicityTypes = new Set<string>();
+    this.abuseTypes = new Set<string>();
     this.usersInReport.clear();
     this.toxicityTypes.clear();
+    this.abuseTypes.clear();
+
     let sum = 0;
     for (const comment of this.commentsForReport) {
       const scores = comment.scores;
@@ -129,6 +133,7 @@ export class ReviewReportComponent {
           : 0;
         this.usersInReport.set(authorName, currentCount + 1);
       }
+      this.abuseTypes = comment.item.abuse ? this.formatAbuseTypes(comment.item.abuse) : this.abuseTypes
     }
     this.averageToxicity = sum / this.commentsForReport.length;
   }
@@ -160,5 +165,11 @@ export class ReviewReportComponent {
 
   private updateReportContext() {
     this.reportService.setContext(this.context);
+  }
+
+  formatAbuseTypes(abuseObjects : AbuseObject[]): Set<string> {
+    let abuseSet = new Set<string>();
+    abuseObjects.forEach(abuseObj => abuseSet.add(abuseObj.type.charAt(0).toUpperCase() + abuseObj.type.slice(1)))
+    return abuseSet;
   }
 }

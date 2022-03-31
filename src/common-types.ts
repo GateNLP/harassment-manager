@@ -32,6 +32,7 @@ export interface SocialMediaItem {
   authorAvatarUrl?: string;
   hasImage?: boolean;
   verified?: boolean;
+  abuse?: AbuseObject[];
 }
 
 export interface ScoredItem<T> {

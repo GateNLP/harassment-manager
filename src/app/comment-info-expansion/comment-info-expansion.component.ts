@@ -38,9 +38,9 @@ export class CommentInfoExpansionComponent implements OnChanges {
     return Math.round(score * 100);
   }
 
-  formatAbuseTypes(abuseObjects : AbuseObject[]): string {
+  formatAbuseTypes(abuseObjects : AbuseObject[]): Array<string> {
     let abuseSet = new Set<string>();
     abuseObjects.forEach(abuseObj => abuseSet.add(abuseObj.type.charAt(0).toUpperCase() + abuseObj.type.slice(1)))
-    return Array.from(abuseSet).sort().join(", ")
+    return Array.from(abuseSet).sort()
   }
 }
