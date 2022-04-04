@@ -115,6 +115,8 @@ export enum SortOption {
 }
 
 export const TOXICITY_FILTER_NAME_QUERY_PARAM = 'toxicityFilterName';
+export const SCREEN_NAME_QUERY_PARAM='screenName';
+export const TWEET_ID_QUERY_PARAM='tweetId';
 
 const PAGE_SIZE = 8;
 
@@ -156,6 +158,11 @@ export class PaginatorIntl extends MatPaginatorIntl {
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntl }],
 })
 export class CreateReportComponent implements OnInit, AfterViewInit {
+  // @ts-ignore
+  screenName: string;
+  // @ts-ignore
+  tweetId: string;
+
   // Copy of enum for use in the template.
   readonly OnboardingStep = OnboardingStep;
 
@@ -386,6 +393,15 @@ export class CreateReportComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.route.queryParams.subscribe((p: any) => {
+      if (p.tweetId){
+        this.tweetId = p.tweetId
+      }
+      if (p.screenName){
+        this.screenName = p.screenName
+      }
+    });
+
     this.initialToxicityFilterNames = this.getInitialToxicityFilterNames();
     this.getComments();
   }
@@ -462,7 +478,8 @@ export class CreateReportComponent implements OnInit, AfterViewInit {
       .fetchItemsGate(
         this.dateFilter.startDateTimeMs,
         this.dateFilter.endDateTimeMs,
-          ['1232269918856515584', '1243786506579271680']
+          this.tweetId,
+          this.screenName
       )
       .pipe(take(1))
       .subscribe(

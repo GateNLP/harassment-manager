@@ -141,7 +141,8 @@ export class SocialMediaItemService {
   fetchItemsGate(
       startDateTimeMs: number,
       endDateTimeMs: number,
-      ids: string[]
+      id: string,
+      screenName: string
   ): Observable<Array<ScoredItem<SocialMediaItem>>> {
 
     const firstLoad = Object.keys(this.requestCache).length === 0;
@@ -150,9 +151,9 @@ export class SocialMediaItemService {
       return this.requestCache[cacheKey];
     }
 
-    const result = this.fetchTweetsGate(startDateTimeMs, endDateTimeMs, ids).pipe(
+    const result = this.fetchTweetsGate(startDateTimeMs, endDateTimeMs, id, screenName).pipe(
         switchMap((items: SocialMediaItem[]) => {
-          this.totalCommentFetchCount += items.length;
+          this.totalCommentFetchCount += items.length
           return this.scoreItems(items);
         }),
         shareReplay(1),
@@ -170,7 +171,8 @@ export class SocialMediaItemService {
   private fetchTweetsGate(
       startDateTimeMs: number,
       endDateTimeMs: number,
-      ids: string[]
+      tweetId: string,
+      screenName: string
   ): Observable<Tweet[]> {
     return from(
         this.twitterElkApiService.getTweets({
@@ -179,7 +181,8 @@ export class SocialMediaItemService {
           // sometimes returns an error if we request data for the most recent
           // minute of time.
           toDate: formatTimestamp(endDateTimeMs - 60000),
-          ids
+          tweet_id: tweetId,
+          screen_name: screenName
         })
     ).pipe(map((response: GetTweetsResponse) => response.tweets));
   }

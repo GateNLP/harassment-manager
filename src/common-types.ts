@@ -248,7 +248,8 @@ export interface GetTweetsElkRequest {
   nextPageToken?: string;
   fromDate: string; // yyyymmddhhmm format is expected here.
   toDate: string; // yyyymmddhhmm format is expected here.
-  ids: string[];
+  tweet_id: string,
+  screen_name: string
 }
 
 export interface GetTweetsElkResponse {
@@ -276,6 +277,7 @@ export  interface ElkHits {
 
 export interface ElkSource {
   entities: ElkEntities;
+  text: string;
 }
 
 export interface ElkEntities {
@@ -302,6 +304,7 @@ export interface TweetObjectElk {
   created_at?: string;
   id_str: string;
   string: string;
+  text: string;
   user?: TwitterUser;
   // From the documentation: This entities object does include a media
   // attribute, but its implementation in the entities section is only

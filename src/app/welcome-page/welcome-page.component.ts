@@ -15,26 +15,34 @@
  */
 
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { FirestoreService } from '../firestore.service';
 import { OauthApiService } from '../oauth_api.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-welcome-page',
   templateUrl: './welcome-page.component.html',
   styleUrls: ['./welcome-page.component.scss'],
 })
-export class WelcomePageComponent {
+export class WelcomePageComponent implements OnInit {
+
+  // @ts-ignore
+  screenName: string;
+  // @ts-ignore
+  tweetId: string;
+
   constructor(
     private firestoreService: FirestoreService,
     private oauthApiService: OauthApiService,
     private sanitizer: DomSanitizer,
     private iconRegistry: MatIconRegistry,
     private router: Router,
-    private liveAnnouncer: LiveAnnouncer
+    private liveAnnouncer: LiveAnnouncer,
+    private route: ActivatedRoute
   ) {
     this.iconRegistry.addSvgIcon(
       'twitter_icon',
@@ -48,7 +56,18 @@ export class WelcomePageComponent {
     this.oauthApiService.authenticateTwitter().then(async () => {
       this.liveAnnouncer.announce('Logged in. Exited Twitter login page.');
       await this.firestoreService.createUserDocument();
-      this.router.navigate(['/gate-home']);
+      this.router.navigate(['/gate-home'], {queryParams: {tweetId: this.tweetId, screenName: this.screenName}});
+    });
+  }
+
+  ngOnInit() {
+    this.route.queryParams.subscribe((p: any) => {
+      if (p.tweetId){
+        this.tweetId = p.tweetId
+      }
+      if (p.screenName){
+        this.screenName = p.screenName
+      }
     });
   }
 }

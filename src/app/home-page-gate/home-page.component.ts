@@ -27,7 +27,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  OnDestroy,
+  OnDestroy, OnInit,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -44,7 +44,11 @@ import { combineLatest, merge, Subscription } from 'rxjs';
 import { filter, finalize, map, skip, take, takeUntil } from 'rxjs/operators';
 import { ScoredItem, Tweet } from '../../common-types';
 import { ClearReportDialogComponent } from '../clear-report-dialog/clear-report-dialog.component';
-import { TOXICITY_FILTER_NAME_QUERY_PARAM } from '../create-report/create-report.component';
+import {
+  SCREEN_NAME_QUERY_PARAM,
+  TOXICITY_FILTER_NAME_QUERY_PARAM,
+  TWEET_ID_QUERY_PARAM
+} from '../create-report/create-report.component';
 import { DateFilterService } from '../date-filter.service';
 import { applyCommentFilters, buildDateFilterForNDays } from '../filter_utils';
 import {
@@ -62,6 +66,8 @@ import {
 } from '../recommended-report-card/recommended-report-card.component';
 import { getRouterLinkForReportStep, ReportService } from '../report.service';
 import { SocialMediaItemService } from '../social-media-item.service';
+import { ActivatedRoute } from '@angular/router';
+
 
 // Width of a card + padding.
 const SCROLL_INCREMENT = 444;
@@ -84,7 +90,13 @@ enum OnboardingStep {
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss'],
 })
-export class HomePageGateComponent implements AfterViewInit, OnDestroy {
+export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
+
+  // @ts-ignore
+  screenName: string;
+  // @ts-ignore
+  tweetId: string;
+
   // Copy of enum for use in the template.
   readonly OnboardingStep = OnboardingStep;
 
@@ -158,22 +170,26 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy {
     private readonly socialMediaItemService: SocialMediaItemService,
     private readonly viewContainerRef: ViewContainerRef,
     private readonly snackBar: MatSnackBar,
-    private readonly googleAnalyticsService: GoogleAnalyticsService
-  ) {
+    private readonly googleAnalyticsService: GoogleAnalyticsService,
+    private readonly route: ActivatedRoute
+
+) {
     this.overlayScrollStrategy = this.scrollStrategyOptions.block();
+
 
     // If there's an error loading the RecommendedReportCards attempt
     // to reload them each time the user renavigates to the home page
     // until the max RELOAD_ATTEMPTS is reached.
     this.routeSubscription = this.router.events
       .pipe(
-        filter(event => event instanceof NavigationEnd && event.url === '/gate-home')
+        filter(event => event instanceof NavigationEnd && event.url.includes('/gate-home'))
       )
       .subscribe(event => {
         if (
           this.errorRecommendedReports &&
           this.loadingRecommendedReportsAttempts < RELOAD_ATTEMPTS
         ) {
+          this.ngOnInit();
           this.getRecommendedReports();
         } else {
           this.routeSubscription.unsubscribe();
@@ -292,7 +308,6 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy {
       });
   }
 
-  //todo: i mean...front or back end alternative to this approach needed
   getRecommendedReports() {
     const dateFilter = buildDateFilterForNDays(
       new Date(this.dateFilterService.getStartTimeMs()),
@@ -300,7 +315,7 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy {
     );
     this.loadingRecommendedReports = true;
     this.socialMediaItemService
-      .fetchItemsGate(dateFilter.startDateTimeMs, dateFilter.endDateTimeMs, ['1232269918856515584', '1243786506579271680'])
+      .fetchItemsGate(dateFilter.startDateTimeMs, dateFilter.endDateTimeMs, this.tweetId, this.screenName)
       .subscribe(
         comments => {
           this.closeLoadingDialog();
@@ -409,6 +424,10 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy {
         EventAction.CLICK
       );
     }
+
+    queryParams[SCREEN_NAME_QUERY_PARAM] = this.screenName
+    queryParams[TWEET_ID_QUERY_PARAM] = this.tweetId
+
     this.router.navigate(['/create-report'], { queryParams });
   }
 
@@ -485,6 +504,17 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy {
         this.shouldShowWelcomeBackCard = true;
         this.name =
           this.oauthApiService.getTwitterCredentials()?.user?.displayName ?? '';
+      });
+  }
+
+  ngOnInit() {
+      this.route.queryParams.subscribe((p: any) => {
+        if (p.tweetId){
+          this.tweetId = p.tweetId
+        }
+        if (p.screenName){
+          this.screenName = p.screenName
+        }
       });
   }
 }

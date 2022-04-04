@@ -52,17 +52,28 @@ export async function getElkTweets(
 
 // todo: handle case of no hits!
 function loadTwitterData(request: GetTweetsElkRequest) : Promise<GetTweetsElkHits>{
-    let shouldMatch: { match: { _id: string; }; }[] = []
+    return client.search({
+        index: 'ranaayyub_no-retweets*',
+        body: {
+            size: 10,
+            query: {bool: {must: [], filter: [{bool: {filter: [
+                {bool: {filter: [{nested: {path: "entities.Abuse", query:
+                {bool: {should: [{match: {"entities.Abuse.target.keyword": "addressee"}}], minimum_should_match: 1}}, score_mode: "none"}},
+                {bool: {should: [{match: {"entities.Tweet.in_reply_to_screen_name":  request.screen_name}}], minimum_should_match: 1}}]}},
+                {bool: {should: [{match_phrase: {"entities.Tweet.in_reply_to_status_id_str": request.tweet_id}}], minimum_should_match: 1}}
+                ]}},
+                {range: {
+                    "entities.Tweet.created_at": {
+                        "gte": "2019-12-12T06:07:00.000Z",
+                        "lte": "2022-03-01T00:00:00.000Z",
+                        "format": "strict_date_optional_time"
+                    }
+                }}],
+                should: [],
+                must_not: []}}
+        }
+    }).then((response : GetTweetsElkResponse) => response.body.hits);
 
-    request.ids.forEach(id => {
-        shouldMatch.push({match: {"_id": id}})
-    })
-
-    return client
-        .search({
-            index: 'ranaayyub_no-retweets*',
-            body: {query: {bool: {should: shouldMatch}}}})
-        .then((response : GetTweetsElkResponse) => response.body.hits);
 }
 
 function parseTweet(tweetObj: ElkHits): Tweet {
@@ -74,6 +85,7 @@ function parseTweet(tweetObj: ElkHits): Tweet {
     // arrays in the TweetObject from the Twitter API response.
     const tweetObject = tweetObj._source.entities.Tweet[0]
     const abuseObject = tweetObj._source.entities.Abuse
+    abuseObject.forEach(abuse=>abuse.type = abuse.type.charAt(0).toUpperCase() + abuse.type.slice(1))
 
     const tweet: Tweet = {
         created_at: tweetObject.created_at,
@@ -91,15 +103,12 @@ function parseTweet(tweetObj: ElkHits): Tweet {
         retweet_count: tweetObject.retweet_count,
         retweeted_status: tweetObject.retweeted_status,
         source: tweetObject.source,
-        text: tweetObject.string,
+        text: tweetObj._source.text,
         truncated: tweetObject.truncated,
         url: `https://twitter.com/i/web/status/${tweetObject.id_str}`,
         user: tweetObject.user,
         abuse: abuseObject
     };
-    if (tweetObject.truncated && tweetObject.extended_tweet) {
-        tweet.text = tweetObject.extended_tweet.full_text;
-    }
     if (tweetObject.created_at) {
         tweet.date = new Date(tweetObject.created_at);
     }
