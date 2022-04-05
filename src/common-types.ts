@@ -33,6 +33,7 @@ export interface SocialMediaItem {
   hasImage?: boolean;
   verified?: boolean;
   abuse?: AbuseObject[];
+  persp_score?: number;
 }
 
 export interface ScoredItem<T> {
@@ -169,6 +170,7 @@ export interface TweetObject {
   retweeted_status?: TweetObject;
   source?: string;
   abuse?: AbuseObject[];
+  persp_score?: number
 }
 
 interface TwitterUser {
@@ -279,6 +281,7 @@ export  interface ElkHits {
 export interface ElkSource {
   entities: ElkEntities;
   text: string;
+  persp_toxicity_score: number;
 }
 
 export interface ElkEntities {
@@ -328,6 +331,7 @@ export interface TweetObjectElk {
   retweet_count?: number;
   retweeted_status?: TweetObject;
   source?: string;
+  persp_score?: number;
 }
 
 // For tweets above 140 characters.

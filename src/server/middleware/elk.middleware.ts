@@ -54,6 +54,7 @@ export async function getElkTweets(
 function loadTwitterData(request: GetTweetsElkRequest) : Promise<GetTweetsElkHits>{
     return client.search({
         index: request.index,
+        size: 1000,
         body: {
             query: {bool: {must: [], filter: [{bool: {filter: [
                 {bool: {filter: [{nested: {path: "entities.Abuse", query:
@@ -84,7 +85,7 @@ function parseTweet(tweetObj: ElkHits): Tweet {
     // arrays in the TweetObject from the Twitter API response.
     const tweetObject = tweetObj._source.entities.Tweet[0]
     const abuseObject = tweetObj._source.entities.Abuse
-    abuseObject.forEach(abuse=>abuse.type = abuse.type.charAt(0).toUpperCase() + abuse.type.slice(1))
+    abuseObject.forEach(abuse=>abuse.type = abuse.type?  abuse.type.charAt(0).toUpperCase() + abuse.type.slice(1) : abuse.type)
 
     const tweet: Tweet = {
         created_at: tweetObject.created_at,
@@ -106,7 +107,8 @@ function parseTweet(tweetObj: ElkHits): Tweet {
         truncated: tweetObject.truncated,
         url: `https://twitter.com/i/web/status/${tweetObject.id_str}`,
         user: tweetObject.user,
-        abuse: abuseObject
+        abuse: abuseObject,
+        persp_score: tweetObj._source.persp_toxicity_score
     };
     if (tweetObject.created_at) {
         tweet.date = new Date(tweetObject.created_at);

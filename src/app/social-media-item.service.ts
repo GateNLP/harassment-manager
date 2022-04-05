@@ -36,6 +36,7 @@ import { OauthApiService } from './oauth_api.service';
 import { PerspectiveApiService } from './perspectiveapi.service';
 import { TwitterApiService } from './twitter_api.service';
 import {TwitterElkApiService} from "./twitter_elk_api.service";
+import {Attributes, AttributeSummaryScores} from "../perspectiveapi-types";
 
 export interface RequestCache {
   // The key to the cache is startDateTimeMs + '_' + endDateTimeMs.
@@ -155,7 +156,7 @@ export class SocialMediaItemService {
     const result = this.fetchTweetsGate(startDateTimeMs, endDateTimeMs, id, screenName, index).pipe(
         switchMap((items: SocialMediaItem[]) => {
           this.totalCommentFetchCount += items.length
-          return this.scoreItems(items);
+          return this.scoreItemsGate(items);
         }),
         shareReplay(1),
         catchError(err => {
@@ -189,6 +190,16 @@ export class SocialMediaItemService {
         })
     ).pipe(map((response: GetTweetsResponse) => response.tweets));
   }
+
+
+  private scoreItemsGate(
+      items: SocialMediaItem[]
+  ): Observable<Array<ScoredItem<SocialMediaItem>>> {
+    return of(items.map(item=> {
+      return item.persp_score ?  {"item": item, scores: {"TOXICITY": item.persp_score}} : {"item": item, scores: {}}
+    }))
+  }
+
 
   private scoreItems(
     items: SocialMediaItem[]
