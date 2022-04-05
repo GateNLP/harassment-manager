@@ -53,14 +53,13 @@ export async function getElkTweets(
 // todo: handle case of no hits!
 function loadTwitterData(request: GetTweetsElkRequest) : Promise<GetTweetsElkHits>{
     return client.search({
-        index: 'ranaayyub_no-retweets*',
+        index: request.index,
         body: {
-            size: 10,
             query: {bool: {must: [], filter: [{bool: {filter: [
                 {bool: {filter: [{nested: {path: "entities.Abuse", query:
                 {bool: {should: [{match: {"entities.Abuse.target.keyword": "addressee"}}], minimum_should_match: 1}}, score_mode: "none"}},
-                {bool: {should: [{match: {"entities.Tweet.in_reply_to_screen_name":  request.screen_name}}], minimum_should_match: 1}}]}},
-                {bool: {should: [{match_phrase: {"entities.Tweet.in_reply_to_status_id_str": request.tweet_id}}], minimum_should_match: 1}}
+                {bool: {should: [{match: {"entities.Tweet.in_reply_to_screen_name": request.screen_name }}], minimum_should_match: 1}}]}},
+                {bool: {should: [{match_phrase: {"entities.Tweet.in_reply_to_status_id_str":  request.tweet_id}}], minimum_should_match: 1}}
                 ]}},
                 {range: {
                     "entities.Tweet.created_at": {

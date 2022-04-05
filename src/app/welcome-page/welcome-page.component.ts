@@ -34,6 +34,8 @@ export class WelcomePageComponent implements OnInit {
   screenName: string;
   // @ts-ignore
   tweetId: string;
+  // @ts-ignore
+  index: string;
 
   constructor(
     private firestoreService: FirestoreService,
@@ -56,18 +58,15 @@ export class WelcomePageComponent implements OnInit {
     this.oauthApiService.authenticateTwitter().then(async () => {
       this.liveAnnouncer.announce('Logged in. Exited Twitter login page.');
       await this.firestoreService.createUserDocument();
-      this.router.navigate(['/gate-home'], {queryParams: {tweetId: this.tweetId, screenName: this.screenName}});
+      this.router.navigate(['/gate-home'], {queryParams: {index: this.index, tweetId: this.tweetId, screenName: this.screenName}});
     });
   }
 
   ngOnInit() {
     this.route.queryParams.subscribe((p: any) => {
-      if (p.tweetId){
-        this.tweetId = p.tweetId
-      }
-      if (p.screenName){
-        this.screenName = p.screenName
-      }
+      p.tweetId ? this.tweetId = p.tweetId : this.tweetId = ""
+      p.screenName ? this.screenName = p.screenName : this.screenName = ""
+      p.index ? this.index = p.index : this.index = ""
     });
   }
 }

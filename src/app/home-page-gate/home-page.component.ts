@@ -45,6 +45,7 @@ import { filter, finalize, map, skip, take, takeUntil } from 'rxjs/operators';
 import { ScoredItem, Tweet } from '../../common-types';
 import { ClearReportDialogComponent } from '../clear-report-dialog/clear-report-dialog.component';
 import {
+  INDEX_QUERY_PARAM,
   SCREEN_NAME_QUERY_PARAM,
   TOXICITY_FILTER_NAME_QUERY_PARAM,
   TWEET_ID_QUERY_PARAM
@@ -96,6 +97,8 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
   screenName: string;
   // @ts-ignore
   tweetId: string;
+  // @ts-ignore
+  index: string;
 
   // Copy of enum for use in the template.
   readonly OnboardingStep = OnboardingStep;
@@ -315,7 +318,7 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
     );
     this.loadingRecommendedReports = true;
     this.socialMediaItemService
-      .fetchItemsGate(dateFilter.startDateTimeMs, dateFilter.endDateTimeMs, this.tweetId, this.screenName)
+      .fetchItemsGate(dateFilter.startDateTimeMs, dateFilter.endDateTimeMs, this.tweetId, this.screenName, this.index)
       .subscribe(
         comments => {
           this.closeLoadingDialog();
@@ -427,6 +430,7 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
 
     queryParams[SCREEN_NAME_QUERY_PARAM] = this.screenName
     queryParams[TWEET_ID_QUERY_PARAM] = this.tweetId
+    queryParams[INDEX_QUERY_PARAM] = this.index
 
     this.router.navigate(['/create-report'], { queryParams });
   }
@@ -509,12 +513,9 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
 
   ngOnInit() {
       this.route.queryParams.subscribe((p: any) => {
-        if (p.tweetId){
-          this.tweetId = p.tweetId
-        }
-        if (p.screenName){
-          this.screenName = p.screenName
-        }
+        p.tweetId ? this.tweetId = p.tweetId : this.tweetId = ""
+        p.screenName ? this.screenName = p.screenName : this.screenName = ""
+        p.index ? this.index = p.index : this.index = ""
       });
   }
 }

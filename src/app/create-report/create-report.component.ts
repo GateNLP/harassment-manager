@@ -117,6 +117,7 @@ export enum SortOption {
 export const TOXICITY_FILTER_NAME_QUERY_PARAM = 'toxicityFilterName';
 export const SCREEN_NAME_QUERY_PARAM='screenName';
 export const TWEET_ID_QUERY_PARAM='tweetId';
+export const INDEX_QUERY_PARAM='index';
 
 const PAGE_SIZE = 8;
 
@@ -162,6 +163,9 @@ export class CreateReportComponent implements OnInit, AfterViewInit {
   screenName: string;
   // @ts-ignore
   tweetId: string;
+
+  // @ts-ignore
+  index: string;
 
   // Copy of enum for use in the template.
   readonly OnboardingStep = OnboardingStep;
@@ -394,12 +398,9 @@ export class CreateReportComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe((p: any) => {
-      if (p.tweetId){
-        this.tweetId = p.tweetId
-      }
-      if (p.screenName){
-        this.screenName = p.screenName
-      }
+      p.tweetId ? this.tweetId = p.tweetId : this.tweetId = ""
+      p.screenName ? this.screenName = p.screenName : this.screenName = ""
+      p.index ? this.index = p.index : this.index = ""
     });
 
     this.initialToxicityFilterNames = this.getInitialToxicityFilterNames();
@@ -479,7 +480,8 @@ export class CreateReportComponent implements OnInit, AfterViewInit {
         this.dateFilter.startDateTimeMs,
         this.dateFilter.endDateTimeMs,
           this.tweetId,
-          this.screenName
+          this.screenName,
+          this.index
       )
       .pipe(take(1))
       .subscribe(

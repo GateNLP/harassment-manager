@@ -140,7 +140,8 @@ export class Server {
       };
     }
 
-    this.log.write(`The config is: ${JSON.stringify(this.config, null, 2)}`);
+    //todo: exposes secrets and passwords in log. maybe leave out for now
+    // this.log.write(`The config is: ${JSON.stringify(this.config, null, 2)}`);
     this.port = Number(this.config.port);
     if (!config.staticPath) {
       console.error('staticPath must be specified in the config.');

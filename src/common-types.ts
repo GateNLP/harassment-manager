@@ -249,7 +249,8 @@ export interface GetTweetsElkRequest {
   fromDate: string; // yyyymmddhhmm format is expected here.
   toDate: string; // yyyymmddhhmm format is expected here.
   tweet_id: string,
-  screen_name: string
+  screen_name: string,
+  index: string
 }
 
 export interface GetTweetsElkResponse {
