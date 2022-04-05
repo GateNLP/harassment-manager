@@ -48,7 +48,7 @@ export function getRouterLinkForReportStep(step: number): string {
     case BuildReportStep.COMPLETE:
       return '/report-complete';
     default:
-      return '/home';
+      return '/gate-home';
   }
 }
 

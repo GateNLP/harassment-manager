@@ -156,7 +156,7 @@ export class ToolbarComponent {
     });
 
     this.reportService.reportCleared.subscribe(() => {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/gate-home']);
     });
 
     this.oauthApiService.twitterSignInChange.subscribe(signedIn => {
@@ -310,7 +310,7 @@ export class ToolbarComponent {
       return '/review-report';
     } else {
       // We shouldn't get here, but if we do, navigate to home.
-      return '/home';
+      return '/gate-home';
     }
   }
 

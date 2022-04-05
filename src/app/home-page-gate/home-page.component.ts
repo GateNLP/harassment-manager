@@ -477,7 +477,7 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
 
     // Listen for when a user navigates away from the home page.
     const userNavigatedAway = this.router.events.pipe(
-      filter(event => event instanceof NavigationStart && event.url !== '/home')
+      filter(event => event instanceof NavigationStart && !(event.url.includes('/gate-home')))
     );
 
     // Listen for when a user signs in and any in-progress report data is
