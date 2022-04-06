@@ -180,20 +180,7 @@ function getTweetHashtags(item: Tweet): string {
   // of 280, and in this case the extended_tweet has the full tweet information
   // including all hashtags.
   // https://docs.tweepy.org/en/latest/extended_tweets.html
-  let hashtags = [];
-  if (item.truncated) {
-    hashtags =
-      item.extended_tweet && item.extended_tweet.entities.hashtags
-        ? item.extended_tweet.entities.hashtags
-        : [];
-  } else {
-    hashtags =
-      item.entities && item.entities.hashtags ? item.entities.hashtags : [];
-  }
-
-  return hashtags.length
-    ? hashtags.map(item => `#${item.text}`).join(', ')
-    : '';
+  return item.hashtags ? item.hashtags.join(",") : ""
 }
 
 function getTwitterReportRowForEntry(entry: ScoredItem<Tweet>) {

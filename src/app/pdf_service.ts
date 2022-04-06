@@ -152,13 +152,8 @@ export function formatHashtags(item: Tweet): string {
   // of 280, and in this case the extended_tweet has the full tweet information
   // including all hashtags.
   // https://docs.tweepy.org/en/latest/extended_tweets.html
-  const hashtags = item.truncated
-    ? item.extended_tweet?.entities.hashtags
-    : item.entities?.hashtags;
+  return item.hashtags ? item.hashtags.join(",") : "-"
 
-  return hashtags?.length
-    ? hashtags.map(item => `#${item.text}`).join(', ')
-    : '-';
 }
 
 @Injectable({

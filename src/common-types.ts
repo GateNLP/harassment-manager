@@ -169,6 +169,7 @@ export interface TweetObject {
   retweet_count?: number;
   retweeted_status?: TweetObject;
   source?: string;
+  hashtags?: string[];
   abuse?: AbuseObject[];
   persp_score?: number
 }
@@ -287,6 +288,11 @@ export interface ElkSource {
 export interface ElkEntities {
   Abuse: AbuseObject[];
   Tweet: TweetObjectElk[];
+  Hashtag?: HashtagObject[];
+}
+
+export interface HashtagObject {
+  string: string
 }
 
 export interface AbuseObject{

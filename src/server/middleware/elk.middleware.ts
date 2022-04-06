@@ -85,6 +85,8 @@ function parseTweet(tweetObj: ElkHits): Tweet {
     // arrays in the TweetObject from the Twitter API response.
     const tweetObject = tweetObj._source.entities.Tweet[0]
     const abuseObject = tweetObj._source.entities.Abuse
+
+    const hashtags = tweetObj._source.entities.Hashtag?.map(hashtag=>hashtag.string)
     abuseObject.forEach(abuse=>abuse.type = abuse.type?  abuse.type.charAt(0).toUpperCase() + abuse.type.slice(1) : abuse.type)
 
     const tweet: Tweet = {
@@ -108,6 +110,7 @@ function parseTweet(tweetObj: ElkHits): Tweet {
         url: `https://twitter.com/i/web/status/${tweetObject.id_str}`,
         user: tweetObject.user,
         abuse: abuseObject,
+        hashtags: hashtags,
         persp_score: tweetObj._source.persp_toxicity_score
     };
     if (tweetObject.created_at) {
