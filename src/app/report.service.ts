@@ -52,6 +52,22 @@ export function getRouterLinkForReportStep(step: number): string {
   }
 }
 
+export function getGateRouterLinkForReportStep(step: number, index: string, screenName: string, tweetId: string): string {
+  const url_params = "?index="+index+"&screenName="+screenName+"&tweetId="+tweetId
+  switch (step) {
+    case BuildReportStep.ADD_COMMENTS:
+      return '/create-report' + url_params;
+    case BuildReportStep.EDIT_DETAILS:
+      return '/review-report'  + url_params;
+    case BuildReportStep.TAKE_ACTION:
+      return '/share-report' + url_params;
+    case BuildReportStep.COMPLETE:
+      return '/report-complete';
+    default:
+      return '/gate-home' + url_params;
+  }
+}
+
 class ComputeReportSummaryHelper {
   count = 0;
   sum = 0;
@@ -150,11 +166,11 @@ export class ReportService {
     let reportSummary = '';
     const attributeScores: Map<string, ComputeReportSummaryHelper> = new Map([
       ['Toxicity', new ComputeReportSummaryHelper('Toxicity')],
-      ['Severe Toxicity', new ComputeReportSummaryHelper('Severe Toxicity')],
-      ['Insult', new ComputeReportSummaryHelper('Insult')],
-      ['Profanity', new ComputeReportSummaryHelper('Profanity')],
-      ['Threat', new ComputeReportSummaryHelper('Threat')],
-      ['Identity Attack', new ComputeReportSummaryHelper('Identity Attack')],
+      // ['Severe Toxicity', new ComputeReportSummaryHelper('Severe Toxicity')],
+      // ['Insult', new ComputeReportSummaryHelper('Insult')],
+      // ['Profanity', new ComputeReportSummaryHelper('Profanity')],
+      // ['Threat', new ComputeReportSummaryHelper('Threat')],
+      // ['Identity Attack', new ComputeReportSummaryHelper('Identity Attack')],
     ]);
 
     for (const entry of this.getCommentsForReport()) {

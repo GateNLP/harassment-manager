@@ -65,7 +65,7 @@ import {
   RECOMMENDED_REPORT_TEMPLATES,
   TOXICITY_RANGE_TEMPLATES,
 } from '../recommended-report-card/recommended-report-card.component';
-import { getRouterLinkForReportStep, ReportService } from '../report.service';
+import {getGateRouterLinkForReportStep, getRouterLinkForReportStep, ReportService} from '../report.service';
 import { SocialMediaItemService } from '../social-media-item.service';
 import { ActivatedRoute } from '@angular/router';
 
@@ -287,7 +287,7 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
   /** Navigate to the page where the user left off on the report. */
   continueReport() {
     this.router.navigate([
-      getRouterLinkForReportStep(this.reportService.getReportStep()),
+      getGateRouterLinkForReportStep(this.reportService.getReportStep(), this.index, this.screenName, this.tweetId),
     ]);
   }
 

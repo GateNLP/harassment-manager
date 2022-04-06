@@ -77,39 +77,29 @@ const DISPLAYED_COLUMNS_TWITTER: string[] = [
   'Time Posted',
   'Tweet ID',
   BORDER_COLUMN,
+  'Toxicity Score',
   'Abuse Type',
   BORDER_COLUMN,
-  'Toxicity',
-  'Severe Toxicity',
-  'Insult',
-  'Profanity',
-  'Threat',
-  'Identity Attack',
-  BORDER_COLUMN,
-  'Retweets/Likes',
+  'Retweets',
+  'Likes',
   'Comments',
 ];
 const COLUMN_STYLES_TWITTER: {
   [key: string]: Partial<Styles>;
 } = {
-  0: { cellWidth: 50 },
+  0: { cellWidth: 60 },
   1: { cellWidth: 12 },
-  2: { cellWidth: 17 },
+  2: { cellWidth: 20 },
   3: { cellWidth: 23 },
   4: { cellWidth: 23 },
-  5: { cellWidth: 17 },
+  5: { cellWidth: 43 },
   6: { cellWidth: 1, fillColor: TABLE_ACCENT_COLOR },
-  7: { cellWidth: 17 },
-  8: { cellWidth: 1, fillColor: TABLE_ACCENT_COLOR },
-  9: { cellWidth: 14, halign: 'center' },
-  10: { cellWidth: 14, halign: 'center' },
-  11: { cellWidth: 14, halign: 'center' },
-  12: { cellWidth: 14, halign: 'center' },
-  13: { cellWidth: 14, halign: 'center' },
-  14: { cellWidth: 14, halign: 'center' },
-  15: { cellWidth: 1, fillColor: TABLE_ACCENT_COLOR },
-  16: { cellWidth: 14, halign: 'center' },
-  17: { cellWidth: 14, halign: 'center' },
+  7: { cellWidth: 14, halign: 'center' },
+  8: { cellWidth: 25, halign: 'center' },
+  9: { cellWidth: 1, fillColor: TABLE_ACCENT_COLOR },
+  10: { cellWidth: 17, halign: 'center' },
+  11: { cellWidth: 17, halign: 'center' },
+  12: { cellWidth: 17, halign: 'center' },
 };
 
 // Passing undefined for the locale uses the user's default locale.
@@ -264,14 +254,13 @@ export class PdfService {
       getTimePosted(String(entry.item.date)),
       entry.item.id_str,
       BORDER_COLUMN,
-      formatAbuseTypes(entry.item.abuse ? entry.item.abuse : []),
-      BORDER_COLUMN,
       formatAttributeScore(entry.scores.TOXICITY),
-      formatAttributeScore(entry.scores.SEVERE_TOXICITY),
-      formatAttributeScore(entry.scores.INSULT),
-      formatAttributeScore(entry.scores.PROFANITY),
-      formatAttributeScore(entry.scores.THREAT),
-      formatAttributeScore(entry.scores.IDENTITY_ATTACK),
+      formatAbuseTypes(entry.item.abuse ? entry.item.abuse : []),
+      // formatAttributeScore(entry.scores.SEVERE_TOXICITY),
+      // formatAttributeScore(entry.scores.INSULT),
+      // formatAttributeScore(entry.scores.PROFANITY),
+      // formatAttributeScore(entry.scores.THREAT),
+      // formatAttributeScore(entry.scores.IDENTITY_ATTACK),
       BORDER_COLUMN,
       formatCount(entry.item.retweet_count),
       formatCount(entry.item.favorite_count),
@@ -382,7 +371,7 @@ export class PdfService {
     const columnStyles = COLUMN_STYLES_TWITTER;
     const displayedRowText = tableBodyContent.displayedRowText;
     doc.addPage();
-    doc.addImage('pdf_table_header.png', 'PNG', 14, 10, 274, 23);
+    doc.addImage('pdf_table_header.png', 'PNG', 14, 10, 273, 23);
     autoTable(doc, {
       theme: 'grid',
       // Shift the table down on the first page so the inserted image isn't covered.

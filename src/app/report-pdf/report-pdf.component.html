@@ -118,53 +118,61 @@
           {{formatAttributeScore(element.scores.TOXICITY)}}
         </td>
       </ng-container>
-      <ng-container matColumnDef="severe toxicity">
-        <th mat-header-cell  class="small-col" *matHeaderCellDef> Severe (%) </th>
-        <td mat-cell [class.page-break-cell]="element.item.text === ''"
-                     class="small-col"
-                     *matCellDef="let element">
-          {{formatAttributeScore(element.scores.SEVERE_TOXICITY)}}
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="insult">
-        <th mat-header-cell  class="small-col" *matHeaderCellDef> Insult (%) </th>
-        <td mat-cell [class.page-break-cell]="element.item.text === ''"
-                     class="small-col"
-                     *matCellDef="let element">
-          {{formatAttributeScore(element.scores.INSULT)}}
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="profanity">
-        <th mat-header-cell  class="small-col" *matHeaderCellDef> Profanity (%) </th>
-        <td mat-cell [class.page-break-cell]="element.item.text === ''"
-                     class="small-col"
-                     *matCellDef="let element">
-          {{formatAttributeScore(element.scores.PROFANITY)}}
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="threat">
-        <th mat-header-cell  class="small-col" *matHeaderCellDef> Threat (%) </th>
-        <td mat-cell [class.page-break-cell]="element.item.text === ''"
-                     class="small-col"
-                     *matCellDef="let element">
-          {{formatAttributeScore(element.scores.THREAT)}}
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="identity attack">
-        <th mat-header-cell  class="border-right small-col" *matHeaderCellDef> Identity (%) </th>
-        <td mat-cell [class.page-break-cell]="element.item.text === ''"
-                     class="border-right small-col"
-                     *matCellDef="let element">
-          {{formatAttributeScore(element.scores.IDENTITY_ATTACK)}}
-        </td>
-      </ng-container>
+<!--      <ng-container matColumnDef="severe toxicity">-->
+<!--        <th mat-header-cell  class="small-col" *matHeaderCellDef> Severe (%) </th>-->
+<!--        <td mat-cell [class.page-break-cell]="element.item.text === ''"-->
+<!--                     class="small-col"-->
+<!--                     *matCellDef="let element">-->
+<!--          {{formatAttributeScore(element.scores.SEVERE_TOXICITY)}}-->
+<!--        </td>-->
+<!--      </ng-container>-->
+<!--      <ng-container matColumnDef="insult">-->
+<!--        <th mat-header-cell  class="small-col" *matHeaderCellDef> Insult (%) </th>-->
+<!--        <td mat-cell [class.page-break-cell]="element.item.text === ''"-->
+<!--                     class="small-col"-->
+<!--                     *matCellDef="let element">-->
+<!--          {{formatAttributeScore(element.scores.INSULT)}}-->
+<!--        </td>-->
+<!--      </ng-container>-->
+<!--      <ng-container matColumnDef="profanity">-->
+<!--        <th mat-header-cell  class="small-col" *matHeaderCellDef> Profanity (%) </th>-->
+<!--        <td mat-cell [class.page-break-cell]="element.item.text === ''"-->
+<!--                     class="small-col"-->
+<!--                     *matCellDef="let element">-->
+<!--          {{formatAttributeScore(element.scores.PROFANITY)}}-->
+<!--        </td>-->
+<!--      </ng-container>-->
+<!--      <ng-container matColumnDef="threat">-->
+<!--        <th mat-header-cell  class="small-col" *matHeaderCellDef> Threat (%) </th>-->
+<!--        <td mat-cell [class.page-break-cell]="element.item.text === ''"-->
+<!--                     class="small-col"-->
+<!--                     *matCellDef="let element">-->
+<!--          {{formatAttributeScore(element.scores.THREAT)}}-->
+<!--        </td>-->
+<!--      </ng-container>-->
+<!--      <ng-container matColumnDef="identity attack">-->
+<!--        <th mat-header-cell  class="border-right small-col" *matHeaderCellDef> Identity (%) </th>-->
+<!--        <td mat-cell [class.page-break-cell]="element.item.text === ''"-->
+<!--                     class="border-right small-col"-->
+<!--                     *matCellDef="let element">-->
+<!--          {{formatAttributeScore(element.scores.IDENTITY_ATTACK)}}-->
+<!--        </td>-->
+<!--      </ng-container>-->
 
-      <ng-container matColumnDef="retweets likes">
+      <ng-container matColumnDef="retweets">
         <th mat-header-cell  class="small-col" *matHeaderCellDef> Retweets/Likes </th>
         <td mat-cell [class.page-break-cell]="element.item.text === ''"
             class="small-col"
             *matCellDef="let element">
-          {{formatCount(element.item.retweet_count)}}/{{formatCount(element.item.favorite_count)}}
+          {{formatCount(element.item.retweet_count)}}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="likes">
+        <th mat-header-cell  class="small-col" *matHeaderCellDef> Retweets/Likes </th>
+        <td mat-cell [class.page-break-cell]="element.item.text === ''"
+            class="small-col"
+            *matCellDef="let element">
+          {{formatCount(element.item.favorite_count)}}
         </td>
       </ng-container>
       <ng-container matColumnDef="comments">
