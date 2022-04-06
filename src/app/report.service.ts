@@ -178,25 +178,25 @@ export class ReportService {
       if (scores.TOXICITY) {
         attributeScores.get('Toxicity')?.addScore(scores.TOXICITY);
       }
-      if (scores.SEVERE_TOXICITY) {
-        attributeScores
-          .get('Severe Toxicity')
-          ?.addScore(scores.SEVERE_TOXICITY);
-      }
-      if (scores.INSULT) {
-        attributeScores.get('Insult')?.addScore(scores.INSULT);
-      }
-      if (scores.PROFANITY) {
-        attributeScores.get('Profanity')?.addScore(scores.PROFANITY);
-      }
-      if (scores.THREAT) {
-        attributeScores.get('Threat')?.addScore(scores.THREAT);
-      }
-      if (scores.IDENTITY_ATTACK) {
-        attributeScores
-          .get('Identity Attack')
-          ?.addScore(scores.IDENTITY_ATTACK);
-      }
+      // if (scores.SEVERE_TOXICITY) {
+      //   attributeScores
+      //     .get('Severe Toxicity')
+      //     ?.addScore(scores.SEVERE_TOXICITY);
+      // }
+      // if (scores.INSULT) {
+      //   attributeScores.get('Insult')?.addScore(scores.INSULT);
+      // }
+      // if (scores.PROFANITY) {
+      //   attributeScores.get('Profanity')?.addScore(scores.PROFANITY);
+      // }
+      // if (scores.THREAT) {
+      //   attributeScores.get('Threat')?.addScore(scores.THREAT);
+      // }
+      // if (scores.IDENTITY_ATTACK) {
+      //   attributeScores
+      //     .get('Identity Attack')
+      //     ?.addScore(scores.IDENTITY_ATTACK);
+      // }
     }
     for (const [attribute, attributeScore] of attributeScores) {
       reportSummary += attributeScore.getAverageScoreString();

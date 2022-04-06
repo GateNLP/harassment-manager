@@ -20,6 +20,7 @@ import { GoogleApis } from 'googleapis';
 import { OAuth2Client } from 'googleapis-common';
 import { sheets_v4 } from 'googleapis/build/src/apis/sheets/v4';
 import {
+  AbuseObject,
   CreateSpreadsheetRequest,
   CreateSpreadsheetResponse,
   CsvFileTemplate,
@@ -27,7 +28,7 @@ import {
   SocialMediaItem,
   Tweet,
 } from '../../common-types';
-import { Attributes } from '../../perspectiveapi-types';
+import {Attributes, GateAttributes} from '../../perspectiveapi-types';
 
 const googleapis = new GoogleApis();
 
@@ -52,7 +53,8 @@ const TWITTER_COLUMN_HEADERS = [
   'Time Posted',
   'Tweet ID',
   'Tweet URL',
-  ...Object.keys(Attributes).map(attr => `${attr} (%)`),
+  'Toxicity (%)',
+  'Abuse (type)',
   'Retweets',
   'Likes',
   'Comments',
@@ -139,13 +141,19 @@ function getTitle(
 /** Returns a formatted array of score values. */
 function getScoreValuesForEntry(entry: ScoredItem<SocialMediaItem>): string[] {
   const scoreValuesForEntry: string[] = [];
-  for (const attr of Object.keys(Attributes)) {
+  for (const attr of Object.keys(GateAttributes)) {
     scoreValuesForEntry.push(
       ((entry.scores[attr as Attributes] || 0) * 100).toFixed(2)
     );
   }
   return scoreValuesForEntry;
 }
+
+/** Returns an array of abuse values. */
+export function formatAbuseTypes(abuseOject: AbuseObject[]): string {
+  return [...new Set(abuseOject.map(abuse => abuse.type))].sort().join(", ")
+}
+
 
 /** Returns a row of values for the Twitter report for the specified entry. */
 function getReportRowForEntry(
@@ -200,6 +208,7 @@ function getTwitterReportRowForEntry(entry: ScoredItem<Tweet>) {
     entry.item.id_str, // Tweet ID,
     entry.item.url ? entry.item.url : '', // Tweet URL
     ...getScoreValuesForEntry(entry),
+     entry.item.abuse ? formatAbuseTypes(entry.item.abuse): '',
     `${entry.item.retweet_count}`, // Retweets
     `${entry.item.favorite_count}`, // Likes
     `${entry.item.reply_count}`, // Comments
