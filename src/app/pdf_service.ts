@@ -29,6 +29,7 @@ import {
 } from '../common-types';
 import { googleSans } from './google-sans-font';
 import { OauthApiService } from './oauth_api.service';
+import {TwitterElkApiService} from "./twitter_elk_api.service";
 
 const TWITTER = 'Twitter';
 
@@ -176,9 +177,10 @@ export class PdfService {
 
   constructor(
     private readonly oauthApiService: OauthApiService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private elkApiService: TwitterElkApiService
   ) {
-    this.username = this.getUsername();
+    this.username = this.getElkUsername();
     this.date = new Date().toLocaleDateString(
       DEFAULT_LOCALE,
       DATE_FORMAT_OPTIONS
@@ -199,6 +201,11 @@ export class PdfService {
       throw new Error('Twitter credentials found, but no username is present');
     }
   }
+
+  private getElkUsername(): string {
+    return this.elkApiService.getElkRequestDetails().screen_name
+  }
+
 
   /**
    * Updates the createPdfObservable with new Report Data to be used to create

@@ -27,6 +27,7 @@ import {
   PdfService,
 } from '../pdf_service';
 import { ReportService } from '../report.service';
+import {TwitterElkApiService} from "../twitter_elk_api.service";
 
 @Component({
   selector: 'app-report-pdf',
@@ -74,7 +75,8 @@ export class ReportPdfComponent {
 
   constructor(
     private pdfService: PdfService,
-    private reportService: ReportService
+    private reportService: ReportService,
+    private elkApiService: TwitterElkApiService
   ) {
     this.pdfService.onCreatePdfRequest.subscribe(request => {
       this.platform = request.platform ? request.platform : '';
@@ -116,6 +118,10 @@ export class ReportPdfComponent {
 
   getUsername() {
     return this.platform === 'Twitter' ? `@${this.username}` : this.username;
+  }
+
+  getElkUsername(): string {
+    return this.elkApiService.getElkRequestDetails().screen_name
   }
 
   getAbuseTypes() {

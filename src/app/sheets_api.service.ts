@@ -26,12 +26,14 @@ import {
   SocialMediaItem,
 } from '../common-types';
 import { OauthApiService } from './oauth_api.service';
+import {TwitterElkApiService} from "./twitter_elk_api.service";
 
 @Injectable()
 export class SheetsApiService {
   constructor(
     private readonly httpClient: HttpClient,
-    private readonly oauthApiService: OauthApiService
+    private readonly oauthApiService: OauthApiService,
+    private readonly elkApiService: TwitterElkApiService
   ) {}
 
   private getUsername(): string {
@@ -49,6 +51,10 @@ export class SheetsApiService {
     }
   }
 
+  private getElkUsername(): string {
+    return this.elkApiService.getElkRequestDetails().screen_name
+  }
+
   /**
    * Creates a CSV file template without calling the Google sheets API.
    */
@@ -64,7 +70,7 @@ export class SheetsApiService {
 
     const request: CreateSpreadsheetRequest<SocialMediaItem> = {
       entries: scoredItems,
-      username: this.getUsername(),
+      username: this.getElkUsername(),
       reportReasons,
       context,
     };
@@ -98,7 +104,7 @@ export class SheetsApiService {
     const request: CreateSpreadsheetRequest<SocialMediaItem> = {
       entries: scoredItems,
       credentials: googleCredentials,
-      username: this.getUsername(),
+      username: this.getElkUsername(),
       reportReasons,
       context,
     };
