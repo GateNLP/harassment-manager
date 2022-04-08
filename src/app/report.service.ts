@@ -78,9 +78,9 @@ class ComputeReportSummaryHelper {
     if (this.count < 1) {
       return '';
     }
-    return `${this.attribute} (${Math.round(
+    return `${Math.round(
       (this.sum / this.count) * 100
-    )}%); `;
+    )}%; `;
   }
 
   addScore(score: number) {

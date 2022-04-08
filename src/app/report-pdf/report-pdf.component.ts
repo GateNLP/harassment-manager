@@ -133,4 +133,8 @@ export class ReportPdfComponent {
 
     return Array.from(abuseSet).sort().join(", ");
   }
+
+  getElkTweetId(): string {
+    return this.elkApiService.getElkRequestDetails().tweet_id
+  }
 }
