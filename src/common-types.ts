@@ -246,6 +246,15 @@ export interface TweetHashtag {
   indices: Indices;
 }
 
+export interface DashboardParams {
+  fromDate: string; // yyyymmddhhmm format is expected here.
+  toDate: string; // yyyymmddhhmm format is expected here.
+  tweetId: string,
+  screenName: string,
+  index: string,
+  filterQuery: string
+}
+
 /*GATE ELK INTERFACES*/
 export interface GetTweetsElkRequest {
   nextPageToken?: string;
@@ -253,7 +262,8 @@ export interface GetTweetsElkRequest {
   toDate: string; // yyyymmddhhmm format is expected here.
   tweet_id: string,
   screen_name: string,
-  index: string
+  index: string,
+  filterQuery?: string
 }
 
 export interface GetTweetsElkResponse {
