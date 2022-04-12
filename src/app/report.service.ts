@@ -52,19 +52,18 @@ export function getRouterLinkForReportStep(step: number): string {
   }
 }
 
-export function getGateRouterLinkForReportStep(step: number, index: string, screenName: string, tweetId: string): string {
-  const url_params = "?index="+index+"&screenName="+screenName+"&tweetId="+tweetId
+export function getGateRouterLinkForReportStep(step: number): string {
   switch (step) {
     case BuildReportStep.ADD_COMMENTS:
-      return '/create-report' + url_params;
+      return '/create-report';
     case BuildReportStep.EDIT_DETAILS:
-      return '/review-report'  + url_params;
+      return '/review-report';
     case BuildReportStep.TAKE_ACTION:
-      return '/share-report' + url_params;
+      return '/share-report';
     case BuildReportStep.COMPLETE:
       return '/report-complete';
     default:
-      return '/gate-home' + url_params;
+      return '/gate-home';
   }
 }
 

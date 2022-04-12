@@ -76,6 +76,7 @@ import { ReportService } from '../report.service';
 import { SearchBoxComponent } from '../search-box/search-box.component';
 import { SocialMediaItemService } from '../social-media-item.service';
 import { ToxicityRangeSelectorDialogComponent } from '../toxicity-range-selector-dialog/toxicity-range-selector-dialog.component';
+import {DashboardParamService} from "../dashboard-param-service";
 
 enum DateFilterName {
   LAST_TWENTY_YEARS = 'Last twenty years',
@@ -115,9 +116,6 @@ export enum SortOption {
 }
 
 export const TOXICITY_FILTER_NAME_QUERY_PARAM = 'toxicityFilterName';
-export const SCREEN_NAME_QUERY_PARAM='screenName';
-export const TWEET_ID_QUERY_PARAM='tweetId';
-export const INDEX_QUERY_PARAM='index';
 
 const PAGE_SIZE = 8;
 
@@ -159,13 +157,6 @@ export class PaginatorIntl extends MatPaginatorIntl {
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntl }],
 })
 export class CreateReportComponent implements OnInit, AfterViewInit {
-  // @ts-ignore
-  screenName: string;
-  // @ts-ignore
-  tweetId: string;
-
-  // @ts-ignore
-  index: string;
 
   // Copy of enum for use in the template.
   readonly OnboardingStep = OnboardingStep;
@@ -328,6 +319,7 @@ export class CreateReportComponent implements OnInit, AfterViewInit {
     private readonly scrollStrategyOptions: ScrollStrategyOptions,
     private onboardingService: OnboardingService,
     private googleAnalyticsService: GoogleAnalyticsService,
+    private dashboardParamService: DashboardParamService,
     private liveAnnouncer: LiveAnnouncer
   ) {
     this.overlayScrollStrategy = this.scrollStrategyOptions.block();
@@ -397,12 +389,6 @@ export class CreateReportComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.route.queryParams.subscribe((p: any) => {
-      p.tweetId ? this.tweetId = p.tweetId : this.tweetId = ""
-      p.screenName ? this.screenName = p.screenName : this.screenName = ""
-      p.index ? this.index = p.index : this.index = ""
-    });
-
     this.initialToxicityFilterNames = this.getInitialToxicityFilterNames();
     this.getComments();
   }
@@ -473,15 +459,17 @@ export class CreateReportComponent implements OnInit, AfterViewInit {
   }
 
   private getComments() {
+    const dbParams = this.dashboardParamService.getDashboardParams()
     this.loading = true;
     this.error = null;
     this.socialMediaItemsService
       .fetchItemsGate(
-        this.dateFilter.startDateTimeMs,
-        this.dateFilter.endDateTimeMs,
-          this.tweetId,
-          this.screenName,
-          this.index
+          this.dateFilter.startDateTimeMs,
+          this.dateFilter.endDateTimeMs,
+          dbParams.tweetId,
+          dbParams.screenName,
+          dbParams.index,
+          dbParams.filterQuery
       )
       .pipe(take(1))
       .subscribe(

@@ -144,7 +144,8 @@ export class SocialMediaItemService {
       endDateTimeMs: number,
       id: string,
       screenName: string,
-      index: string
+      index: string,
+      filterQuery: string
   ): Observable<Array<ScoredItem<SocialMediaItem>>> {
 
     const firstLoad = Object.keys(this.requestCache).length === 0;
@@ -153,7 +154,7 @@ export class SocialMediaItemService {
       return this.requestCache[cacheKey];
     }
 
-    const result = this.fetchTweetsGate(startDateTimeMs, endDateTimeMs, id, screenName, index).pipe(
+    const result = this.fetchTweetsGate(startDateTimeMs, endDateTimeMs, id, screenName, index, filterQuery).pipe(
         switchMap((items: SocialMediaItem[]) => {
           this.totalCommentFetchCount += items.length
           return this.scoreItemsGate(items);
@@ -175,18 +176,17 @@ export class SocialMediaItemService {
       endDateTimeMs: number,
       tweetId: string,
       screenName: string,
-      index: string
+      index: string,
+      filterQuery: string
   ): Observable<Tweet[]> {
     return from(
         this.twitterElkApiService.getTweets({
-          fromDate: formatTimestamp(startDateTimeMs),
-          // Subtract 1 minute from the end time because the Twitter API
-          // sometimes returns an error if we request data for the most recent
-          // minute of time.
-          toDate: formatTimestamp(endDateTimeMs - 60000),
+          fromDate: formatTime(startDateTimeMs),
+          toDate: formatTime(endDateTimeMs),
           tweet_id: tweetId,
           screen_name: screenName,
-          index: index
+          index: index,
+          filterQuery: filterQuery
         })
     ).pipe(map((response: GetTweetsResponse) => response.tweets));
   }
@@ -251,3 +251,9 @@ function formatTimestamp(ms: number): string {
     `${(mm > 9 ? '' : '0') + mm}`
   );
 }
+
+function formatTime(ms: number): string{
+  const date = new Date(ms)
+  return date.toISOString()
+}
+

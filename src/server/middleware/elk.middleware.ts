@@ -25,7 +25,6 @@ import {
     TweetObject,
     TwitterApiResponse,
 } from '../../common-types';
-import {TwitterElkApiService} from "../../app/twitter_elk_api.service";
 
 // Max results per twitter call.
 const BATCH_SIZE = 500;
@@ -64,8 +63,8 @@ function loadTwitterData(request: GetTweetsElkRequest) : Promise<GetTweetsElkHit
                 ]}},
                 {range: {
                     "entities.Tweet.created_at": {
-                        "gte": "2019-12-12T06:07:00.000Z",
-                        "lte": "2022-03-01T00:00:00.000Z",
+                        "gte": request.fromDate,
+                        "lte": request.toDate,
                         "format": "strict_date_optional_time"
                     }
                 }}],

@@ -26,14 +26,14 @@ import {
   SocialMediaItem,
 } from '../common-types';
 import { OauthApiService } from './oauth_api.service';
-import {TwitterElkApiService} from "./twitter_elk_api.service";
+import {DashboardParamService} from "./dashboard-param-service";
 
 @Injectable()
 export class SheetsApiService {
   constructor(
     private readonly httpClient: HttpClient,
     private readonly oauthApiService: OauthApiService,
-    private readonly elkApiService: TwitterElkApiService
+    private readonly dashboardParamService: DashboardParamService
   ) {}
 
   private getUsername(): string {
@@ -52,7 +52,7 @@ export class SheetsApiService {
   }
 
   private getElkUsername(): string {
-    return this.elkApiService.getElkRequestDetails().screen_name
+    return this.dashboardParamService.getDashboardParams().screenName
   }
 
   /**

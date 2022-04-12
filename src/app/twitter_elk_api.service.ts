@@ -40,15 +40,12 @@ export class TwitterElkApiService {
   // Twitter's API has a limit of 2 QPS.
   private rateLimiter = new RateLimiter(2, 1000);
 
-  private elkRequestDetails : GetTweetsElkRequest = {fromDate: "", index: "", screen_name: "", toDate: "", tweet_id: ""}
-
   constructor(
       private readonly httpClient: HttpClient,
   ) {
   }
 
   async getTweets(request: GetTweetsElkRequest): Promise<GetTweetsResponse> {
-    this.elkRequestDetails = request
     const headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json');
 
@@ -85,9 +82,5 @@ export class TwitterElkApiService {
       this.onTweetsLoadedSource.next(fullResponse.tweets.length);
     }
     return fullResponse;
-  }
-
-  getElkRequestDetails(){
-    return this.elkRequestDetails
   }
 }

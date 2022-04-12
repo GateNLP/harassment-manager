@@ -115,7 +115,17 @@ export class ReviewReportComponent {
 
     let sum = 0;
     for (const comment of this.commentsForReport) {
+      const authorName = comment.item.authorScreenName;
+      if (authorName) {
+        const currentCount = this.usersInReport.has(authorName)
+            ? this.usersInReport.get(authorName)!
+            : 0;
+        this.usersInReport.set(authorName, currentCount + 1);
+      }
+      this.abuseTypes = comment.item.abuse ? this.abuseTypes.concat(this.abuseTypes, comment.item.abuse) : this.abuseTypes
+
       const scores = comment.scores;
+
       if (!scores.TOXICITY) {
         continue;
       }
@@ -125,14 +135,6 @@ export class ReviewReportComponent {
           this.toxicityTypes.add(attr);
         }
       }
-      const authorName = comment.item.authorScreenName;
-      if (authorName) {
-        const currentCount = this.usersInReport.has(authorName)
-          ? this.usersInReport.get(authorName)!
-          : 0;
-        this.usersInReport.set(authorName, currentCount + 1);
-      }
-      this.abuseTypes = comment.item.abuse ? this.abuseTypes.concat(this.abuseTypes, comment.item.abuse) : this.abuseTypes
     }
     this.averageToxicity = sum / this.commentsForReport.length;
   }

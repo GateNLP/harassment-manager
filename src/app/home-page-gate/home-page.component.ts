@@ -42,16 +42,13 @@ import {
 } from '@angular/router';
 import { combineLatest, merge, Subscription } from 'rxjs';
 import { filter, finalize, map, skip, take, takeUntil } from 'rxjs/operators';
-import { ScoredItem, Tweet } from '../../common-types';
+import {DashboardParams, ScoredItem, Tweet} from '../../common-types';
 import { ClearReportDialogComponent } from '../clear-report-dialog/clear-report-dialog.component';
 import {
-  INDEX_QUERY_PARAM,
-  SCREEN_NAME_QUERY_PARAM,
   TOXICITY_FILTER_NAME_QUERY_PARAM,
-  TWEET_ID_QUERY_PARAM
 } from '../create-report/create-report.component';
 import { DateFilterService } from '../date-filter.service';
-import { applyCommentFilters, buildDateFilterForNDays } from '../filter_utils';
+import {applyCommentFilters, buildDateFilterForNDays, setDateFilter} from '../filter_utils';
 import {
   EventAction,
   EventCategory,
@@ -68,6 +65,7 @@ import {
 import {getGateRouterLinkForReportStep, getRouterLinkForReportStep, ReportService} from '../report.service';
 import { SocialMediaItemService } from '../social-media-item.service';
 import { ActivatedRoute } from '@angular/router';
+import {DashboardParamService} from "../dashboard-param-service";
 
 
 // Width of a card + padding.
@@ -91,14 +89,7 @@ enum OnboardingStep {
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss'],
 })
-export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
-
-  // @ts-ignore
-  screenName: string;
-  // @ts-ignore
-  tweetId: string;
-  // @ts-ignore
-  index: string;
+export class HomePageGateComponent implements AfterViewInit, OnDestroy {
 
   // Copy of enum for use in the template.
   readonly OnboardingStep = OnboardingStep;
@@ -133,6 +124,7 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
   private overlayRef: OverlayRef | null = null;
 
   private comments?: Array<ScoredItem<Tweet>>;
+
   recommendedReports: RecommendedReportData[] = RECOMMENDED_REPORT_TEMPLATES.map(
     template => ({
       toxicityRangeFilter: template.toxicityRangeFilter,
@@ -166,6 +158,7 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
     private readonly dialog: MatDialog,
     private readonly oauthApiService: OauthApiService,
     private readonly onboardingService: OnboardingService,
+    private readonly dashboardParamService: DashboardParamService,
     private readonly overlay: Overlay,
     private readonly reportService: ReportService,
     private readonly router: Router,
@@ -192,7 +185,6 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
           this.errorRecommendedReports &&
           this.loadingRecommendedReportsAttempts < RELOAD_ATTEMPTS
         ) {
-          this.ngOnInit();
           this.getRecommendedReports();
         } else {
           this.routeSubscription.unsubscribe();
@@ -287,7 +279,7 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
   /** Navigate to the page where the user left off on the report. */
   continueReport() {
     this.router.navigate([
-      getGateRouterLinkForReportStep(this.reportService.getReportStep(), this.index, this.screenName, this.tweetId),
+      getGateRouterLinkForReportStep(this.reportService.getReportStep()),
     ]);
   }
 
@@ -312,13 +304,11 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   getRecommendedReports() {
-    const dateFilter = buildDateFilterForNDays(
-      new Date(this.dateFilterService.getStartTimeMs()),
-      1
-    );
+    const dbParams = this.dashboardParamService.getDashboardParams()
+    const dateFilter = setDateFilter(dbParams.fromDate, dbParams.toDate);
     this.loadingRecommendedReports = true;
     this.socialMediaItemService
-      .fetchItemsGate(dateFilter.startDateTimeMs, dateFilter.endDateTimeMs, this.tweetId, this.screenName, this.index)
+      .fetchItemsGate(dateFilter.startDateTimeMs, dateFilter.endDateTimeMs, dbParams.tweetId, dbParams.screenName, dbParams.index, dbParams.filterQuery)
       .subscribe(
         comments => {
           this.closeLoadingDialog();
@@ -428,10 +418,6 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
       );
     }
 
-    queryParams[SCREEN_NAME_QUERY_PARAM] = this.screenName
-    queryParams[TWEET_ID_QUERY_PARAM] = this.tweetId
-    queryParams[INDEX_QUERY_PARAM] = this.index
-
     this.router.navigate(['/create-report'], { queryParams });
   }
 
@@ -508,14 +494,6 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy, OnInit {
         this.shouldShowWelcomeBackCard = true;
         this.name =
           this.oauthApiService.getTwitterCredentials()?.user?.displayName ?? '';
-      });
-  }
-
-  ngOnInit() {
-      this.route.queryParams.subscribe((p: any) => {
-        p.tweetId ? this.tweetId = p.tweetId : this.tweetId = ""
-        p.screenName ? this.screenName = p.screenName : this.screenName = ""
-        p.index ? this.index = p.index : this.index = ""
       });
   }
 }

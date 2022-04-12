@@ -280,7 +280,7 @@ export class ToolbarComponent {
               // Show 'report complete' page only if user took action on report.
               this.router.navigate([nextPage]);
             } else {
-              this.router.navigate(['/home']);
+              this.router.navigate(['/gate-home']);
             }
           }
         });

@@ -18,16 +18,20 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 import {Component, OnInit} from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+  import {Params, Router} from '@angular/router';
 import { FirestoreService } from '../firestore.service';
 import { OauthApiService } from '../oauth_api.service';
 import { ActivatedRoute } from '@angular/router';
+import {
+} from "../create-report/create-report.component";
+import {DashboardParamService} from "../dashboard-param-service";
 
 @Component({
   selector: 'app-welcome-page',
   templateUrl: './welcome-page.component.html',
   styleUrls: ['./welcome-page.component.scss'],
 })
+
 export class WelcomePageComponent implements OnInit {
 
   // @ts-ignore
@@ -36,10 +40,17 @@ export class WelcomePageComponent implements OnInit {
   tweetId: string;
   // @ts-ignore
   index: string;
+  // @ts-ignore
+  fromDate: string;
+  // @ts-ignore
+  toDate: string;
+  // @ts-ignore
+  filterQuery: string;
 
   constructor(
     private firestoreService: FirestoreService,
     private oauthApiService: OauthApiService,
+    private dashboardParamService: DashboardParamService,
     private sanitizer: DomSanitizer,
     private iconRegistry: MatIconRegistry,
     private router: Router,
@@ -58,15 +69,22 @@ export class WelcomePageComponent implements OnInit {
     this.oauthApiService.authenticateTwitter().then(async () => {
       this.liveAnnouncer.announce('Logged in. Exited Twitter login page.');
       await this.firestoreService.createUserDocument();
-      this.router.navigate(['/gate-home'], {queryParams: {index: this.index, tweetId: this.tweetId, screenName: this.screenName}});
+
+      this.router.navigate(['/gate-home']);
     });
   }
 
   ngOnInit() {
-    this.route.queryParams.subscribe((p: any) => {
-      p.tweetId ? this.tweetId = p.tweetId : this.tweetId = ""
-      p.screenName ? this.screenName = p.screenName : this.screenName = ""
-      p.index ? this.index = p.index : this.index = ""
+    this.route.queryParams.subscribe((params: any) => {
+      const dashboardParams = {
+        tweetId : params.tweetId ? params.tweetId : "",
+        screenName : params.screenName ? params.screenName : "",
+        index : params.index ? params.index : "",
+        fromDate : params.fromDate ? params.fromDate : "",
+        toDate : params.toDate ? params.toDate : "",
+        filterQuery : params.filterQuery ? params.filterQuery : "",
+      }
+      this.dashboardParamService.setDashboardParams(dashboardParams)
     });
   }
 }

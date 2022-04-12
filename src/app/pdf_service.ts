@@ -29,7 +29,7 @@ import {
 } from '../common-types';
 import { googleSans } from './google-sans-font';
 import { OauthApiService } from './oauth_api.service';
-import {TwitterElkApiService} from "./twitter_elk_api.service";
+import {DashboardParamService} from "./dashboard-param-service";
 
 const TWITTER = 'Twitter';
 
@@ -178,7 +178,7 @@ export class PdfService {
   constructor(
     private readonly oauthApiService: OauthApiService,
     private sanitizer: DomSanitizer,
-    private elkApiService: TwitterElkApiService
+    private dashboardParamsService: DashboardParamService,
   ) {
     this.username = this.getElkUsername();
     this.date = new Date().toLocaleDateString(
@@ -203,7 +203,7 @@ export class PdfService {
   }
 
   private getElkUsername(): string {
-    return this.elkApiService.getElkRequestDetails().screen_name
+    return this.dashboardParamsService.getDashboardParams().screenName
   }
 
 
