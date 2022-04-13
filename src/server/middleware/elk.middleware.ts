@@ -51,6 +51,8 @@ export async function getElkTweets(
 
 // todo: handle case of no hits!
 function loadTwitterData(request: GetTweetsElkRequest) : Promise<GetTweetsElkHits>{
+    let query = handleQueryElement(request.filterQuery)
+
     return client.search({
         index: request.index,
         size: 1000,
@@ -59,7 +61,8 @@ function loadTwitterData(request: GetTweetsElkRequest) : Promise<GetTweetsElkHit
                 {bool: {filter: [{nested: {path: "entities.Abuse", query:
                 {bool: {should: [{match: {"entities.Abuse.target.keyword": "addressee"}}], minimum_should_match: 1}}, score_mode: "none"}},
                 {bool: {should: [{match: {"entities.Tweet.in_reply_to_screen_name": request.screen_name }}], minimum_should_match: 1}}]}},
-                {bool: {should: [{match_phrase: {"entities.Tweet.in_reply_to_status_id_str":  request.tweet_id}}], minimum_should_match: 1}}
+                {bool: {should: [{match_phrase: {"entities.Tweet.in_reply_to_status_id_str":  request.tweet_id}}], minimum_should_match: 1}},
+                {query_string: {query: query, default_field: "text", default_operator: "or", max_determinized_states: 10000}}
                 ]}},
                 {range: {
                     "entities.Tweet.created_at": {
@@ -73,6 +76,15 @@ function loadTwitterData(request: GetTweetsElkRequest) : Promise<GetTweetsElkHit
         }
     }).then((response : GetTweetsElkResponse) => response.body.hits);
 
+}
+
+function handleQueryElement(query: string | undefined): string {
+    if (query) {
+        query = query?.replace("#", "entities.Hashtag.string.keyword:#");
+        query = query?.replace("@", "entities.UserID.user:");
+        return query
+    }
+    return  "*"
 }
 
 function parseTweet(tweetObj: ElkHits): Tweet {
