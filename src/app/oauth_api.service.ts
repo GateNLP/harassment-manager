@@ -15,11 +15,12 @@
  */
 
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import {AngularFireAuth, PERSISTENCE} from '@angular/fire/compat/auth';
 import firebase from 'firebase/compat/app';
 import { Credentials } from 'google-auth-library';
 import { Observable, ReplaySubject } from 'rxjs';
 import { GapiService } from './gapi.service';
+import Persistence = firebase.auth.Auth.Persistence;
 
 @Injectable({
   providedIn: 'root',
@@ -57,9 +58,12 @@ export class OauthApiService {
 
   async authenticateTwitter(): Promise<void> {
     try {
+      await this.angularFireAuth.setPersistence(Persistence.LOCAL)
       this.twitterCredentials = await this.angularFireAuth.signInWithPopup(
         this.twitterProvider
       );
+      //todo: stop doing this and start using listener or indexed db where the details actually live.
+      localStorage.setItem("fbase_user", JSON.stringify(this.twitterCredentials))
       this.signedInWithTwitterSubject.next(true);
     } catch (error) {
       throw new Error('Error signing in with Twitter: ' + error);
@@ -74,10 +78,21 @@ export class OauthApiService {
     return this.twitterCredentials;
   }
 
+
+  setTwitterCredentials(incomingCrendentals : firebase.auth.UserCredential ) {
+    this.twitterCredentials = incomingCrendentals
+    this.signedInWithTwitterSubject.next(true)
+
+  }
+
   getTwitterOauthCredential(): firebase.auth.OAuthCredential | undefined {
     return this.twitterCredentials
       ? (this.twitterCredentials.credential as firebase.auth.OAuthCredential)
       : undefined;
+  }
+
+  getAuthStatus(): Observable<firebase.User | null> {
+    return this.angularFireAuth.authState
   }
 
   async signOutOfTwitter(): Promise<void> {
@@ -85,6 +100,7 @@ export class OauthApiService {
       await this.angularFireAuth.signOut();
       this.signedInWithTwitterSubject.next(false);
       this.twitterCredentials = undefined;
+      localStorage.removeItem("fbase_user");
     } catch (error) {
       throw new Error('Error signing out of Twitter: ' + error);
     }

@@ -18,13 +18,14 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 import {Component, OnInit} from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-  import {Params, Router} from '@angular/router';
+  import {ActivatedRouteSnapshot, Params, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
 import { FirestoreService } from '../firestore.service';
 import { OauthApiService } from '../oauth_api.service';
 import { ActivatedRoute } from '@angular/router';
 import {
 } from "../create-report/create-report.component";
 import {DashboardParamService} from "../dashboard-param-service";
+import {first, map, Observable, tap} from "rxjs";
 
 @Component({
   selector: 'app-welcome-page',
@@ -74,6 +75,14 @@ export class WelcomePageComponent implements OnInit {
     });
   }
 
+  retrieveAuthDetails(): void {
+    let incomingCredentials = localStorage.getItem("fbase_user")
+    this.oauthApiService.setTwitterCredentials(JSON.parse(<string>incomingCredentials))
+    this.firestoreService.createUserDocument().then(()=>{
+      this.router.navigate(['/gate-home'])
+    })
+  }
+
   ngOnInit() {
     this.route.queryParams.subscribe((params: any) => {
       const dashboardParams = {
@@ -86,5 +95,11 @@ export class WelcomePageComponent implements OnInit {
       }
       this.dashboardParamService.setDashboardParams(dashboardParams)
     });
+
+    let authState = this.oauthApiService.getAuthStatus()
+    if (authState) {
+      this.retrieveAuthDetails()
+    }
+
   }
 }
