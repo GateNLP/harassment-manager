@@ -122,7 +122,7 @@ function parseTweet(tweetObj: ElkHits): Tweet {
         user: tweetObject.user,
         abuse: abuseObject,
         hashtags: hashtags,
-        persp_score: tweetObj._source.persp_toxicity_score
+        persp_score: tweetObj._source.persp_toxicity
     };
     if (tweetObject.created_at) {
         tweet.date = new Date(tweetObject.created_at);

@@ -292,7 +292,12 @@ export  interface ElkHits {
 export interface ElkSource {
   entities: ElkEntities;
   text: string;
-  persp_toxicity_score: number;
+  persp_toxicity: number;
+  persp_severe_toxicity: number;
+  persp_identity_attack: number;
+  persp_insult: number;
+  persp_profanity: number;
+  persp_threat: number;
 }
 
 export interface ElkEntities {
