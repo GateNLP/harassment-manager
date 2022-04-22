@@ -18,7 +18,7 @@ import { A11yModule } from '@angular/cdk/a11y';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { APP_BASE_HREF } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
@@ -103,6 +103,7 @@ import { TweetImageComponent } from './tweet-image/tweet-image.component';
 import { TwitterApiService } from './twitter_api.service';
 import { WelcomePageComponent } from './welcome-page/welcome-page.component';
 import {TwitterElkApiService} from "./twitter_elk_api.service";
+import {HttpBaseInterceptor} from "./HttpBaseInterceptor";
 
 @NgModule({
   declarations: [
@@ -211,6 +212,8 @@ import {TwitterElkApiService} from "./twitter_elk_api.service";
       },
     },
     { provide: APP_BASE_HREF, useValue: '/' },
+    // { provide: APP_BASE_HREF, useValue: '/fcdo/harassment-manager/' },
+    // { provide: HTTP_INTERCEPTORS, useClass: HttpBaseInterceptor, multi: true }
   ],
   bootstrap: [AppComponent],
 })

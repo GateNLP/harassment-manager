@@ -151,7 +151,6 @@ export class Server {
     this.log.write(`Resolved staticPath: ${this.staticPath}`);
 
     this.app = express();
-
     // Trust proxies so that DoS server can see original IP addresses.
     // DoS Server will hopefully start from the least trustd IPs and work
     // backwards.
@@ -163,13 +162,16 @@ export class Server {
     this.app.use(compression()); // Enable gzip
     this.app.use(bodyParser.json({ limit: REQUEST_PAYLOAD_LIMIT })); // Enable json parser
 
+    let router = express.Router();
+    router.use(express.static(this.staticPath));
+
     // Respond to health checks when running on
     // Google AppEngine and ComputeEngine
     this.app.get('/_ah/health', (_req, res) => {
       res.status(200).send('ok');
     });
 
-    this.app.post('/check', (req, res) => {
+    router.post('/check', (req, res) => {
       this.sendAnalyzeRequest(this.getAnalyzeCommentRequest(req))
         .then((response: AnalyzeCommentResponse) => {
           res.send(response);
@@ -180,34 +182,34 @@ export class Server {
         });
     });
 
-    this.app.post('/get_elk_tweets', (req, res) =>{
+    router.post('/get_elk_tweets', (req, res) =>{
       getElkTweets(req, res)
     });
 
-    this.app.post('/get_tweets', (req, res) => {
+    router.post('/get_tweets', (req, res) => {
       getTweets(req, res, this.config.twitterApiCredentials);
     });
 
-    this.app.post('/block_twitter_users', (req, res) => {
+    router.post('/block_twitter_users', (req, res) => {
       blockTwitterUsers(req, res, this.config.twitterApiCredentials);
     });
 
-    this.app.post('/mute_twitter_users', (req, res) => {
+    router.post('/mute_twitter_users', (req, res) => {
       muteTwitterUsers(req, res, this.config.twitterApiCredentials);
     });
 
-    this.app.post('/hide_replies_twitter', (req, res) => {
+    router.post('/hide_replies_twitter', (req, res) => {
       hideTwitterReplies(req, res, this.config.twitterApiCredentials);
     });
 
-    this.app.post('/save_twitter_report_csv', (req, res) => {
+    router.post('/save_twitter_report_csv', (req, res) => {
       const template = getReportCsvTemplate(
         req.body as CreateSpreadsheetRequest<Tweet>
       );
       res.send(template);
     });
 
-    this.app.post('/create_twitter_report', (req, res) => {
+    router.post('/create_twitter_report', (req, res) => {
       const createSpreadsheetRequest =
         req.body as CreateSpreadsheetRequest<Tweet>;
 
@@ -223,13 +225,17 @@ export class Server {
       sendCreateSpreadsheetApiRequest(req, res, oauthClient);
     });
 
-    this.app.post('/clear_report', (req, res) => {
+    router.post('/clear_report', (req, res) => {
       clearReport(req, res);
     });
 
-    this.app.use((_req, res) => {
+    router.use((_req, res) => {
+      console.log(_req.url)
       res.sendFile('index.html', { root: 'dist/harassment-manager' });
     });
+
+    this.app.use("/", router)
+    // this.app.use("/harassment-manager", router)
 
     this.httpServer = http.createServer(this.app);
     this.log.write(`created server`);
