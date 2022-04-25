@@ -23,7 +23,7 @@ import {
     GetTweetsResponse,
     Tweet,
     TweetObject,
-    TwitterApiResponse,
+    TwitterApiResponse, PerspectiveData,
 } from '../../common-types';
 
 // Max results per twitter call.
@@ -122,8 +122,18 @@ function parseTweet(tweetObj: ElkHits): Tweet {
         user: tweetObject.user,
         abuse: abuseObject,
         hashtags: hashtags,
-        persp_score: tweetObj._source.persp_toxicity
     };
+    if (tweetObj._source.persp_toxicity){
+        const perspData: PerspectiveData = {
+            persp_toxicity: tweetObj._source.persp_toxicity,
+            persp_severe_toxicity: tweetObj._source.persp_severe_toxicity,
+            persp_identity_attack: tweetObj._source.persp_identity_attack,
+            persp_insult: tweetObj._source.persp_insult,
+            persp_profanity: tweetObj._source.persp_profanity,
+            persp_threat: tweetObj._source.persp_threat
+        }
+        tweet.persp_data = perspData
+    }
     if (tweetObject.created_at) {
         tweet.date = new Date(tweetObject.created_at);
     }

@@ -196,7 +196,22 @@ export class SocialMediaItemService {
       items: SocialMediaItem[]
   ): Observable<Array<ScoredItem<SocialMediaItem>>> {
     return of(items.map(item=> {
-      return item.persp_score ?  {"item": item, scores: {"TOXICITY": item.persp_score}} : {"item": item, scores: {}}
+      if(item.persp_data) {
+        return {
+          item: item,
+          scores: {
+            TOXICITY: item.persp_data.persp_toxicity,
+            SEVERE_TOXICITY: item.persp_data.persp_severe_toxicity,
+            INSULT: item.persp_data.persp_insult,
+            PROFANITY: item.persp_data.persp_profanity,
+            THREAT: item.persp_data.persp_threat,
+            IDENTITY_ATTACK: item.persp_data.persp_identity_attack
+          }
+        }
+      }
+      else{
+        return {"item": item, scores: {}}
+      }
     }))
   }
 

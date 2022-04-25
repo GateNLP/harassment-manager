@@ -28,7 +28,7 @@ import {
   SocialMediaItem,
   Tweet,
 } from '../../common-types';
-import {Attributes, GateAttributes} from '../../perspectiveapi-types';
+import {Attributes} from '../../perspectiveapi-types';
 
 const googleapis = new GoogleApis();
 
@@ -54,6 +54,11 @@ const TWITTER_COLUMN_HEADERS = [
   'Tweet ID',
   'Tweet URL',
   'Toxicity (%)',
+  'Severe Toxicity (%)',
+  'Insult (%)',
+  'Profanity (%)',
+  'Threat (%)',
+  'Identity Attack (%)',
   'Abuse (type)',
   'Retweets',
   'Likes',
@@ -141,7 +146,7 @@ function getTitle(
 /** Returns a formatted array of score values. */
 function getScoreValuesForEntry(entry: ScoredItem<SocialMediaItem>): string[] {
   const scoreValuesForEntry: string[] = [];
-  for (const attr of Object.keys(GateAttributes)) {
+  for (const attr of Object.keys(Attributes)) {
     scoreValuesForEntry.push(
       ((entry.scores[attr as Attributes] || 0) * 100).toFixed(2)
     );

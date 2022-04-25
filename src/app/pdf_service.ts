@@ -30,6 +30,7 @@ import {
 import { googleSans } from './google-sans-font';
 import { OauthApiService } from './oauth_api.service';
 import {DashboardParamService} from "./dashboard-param-service";
+import {Attributes, AttributeSummaryScores} from "../perspectiveapi-types";
 
 const TWITTER = 'Twitter';
 
@@ -78,7 +79,7 @@ const DISPLAYED_COLUMNS_TWITTER: string[] = [
   'Time Posted',
   'Tweet ID',
   BORDER_COLUMN,
-  'Toxicity Score',
+  'Toxicity Scores (%)',
   'Abuse Type',
   BORDER_COLUMN,
   'Retweets',
@@ -88,14 +89,14 @@ const DISPLAYED_COLUMNS_TWITTER: string[] = [
 const COLUMN_STYLES_TWITTER: {
   [key: string]: Partial<Styles>;
 } = {
-  0: { cellWidth: 60 },
+  0: { cellWidth: 55 },
   1: { cellWidth: 12 },
   2: { cellWidth: 20 },
   3: { cellWidth: 23 },
   4: { cellWidth: 23 },
-  5: { cellWidth: 43 },
+  5: { cellWidth: 28 },
   6: { cellWidth: 1, fillColor: TABLE_ACCENT_COLOR },
-  7: { cellWidth: 14, halign: 'center' },
+  7: { cellWidth: 34, halign: 'left' },
   8: { cellWidth: 25, halign: 'center' },
   9: { cellWidth: 1, fillColor: TABLE_ACCENT_COLOR },
   10: { cellWidth: 17, halign: 'center' },
@@ -107,12 +108,25 @@ const COLUMN_STYLES_TWITTER: {
 // See https://stackoverflow.com/a/31873738
 export const DEFAULT_LOCALE = undefined;
 
+
 export function formatAttributeScore(score?: number): string {
   if (score === undefined) {
     return '-';
   } else {
     return `${Math.round(score * 100)}`;
   }
+}
+
+export function formatAttributes(attributeScores?: AttributeSummaryScores) : string {
+  let finalAttributeSet =
+    "Toxicity: " + formatAttributeScore(attributeScores?.TOXICITY) + "\n" +
+    "Severe toxicity: " + formatAttributeScore(attributeScores?.SEVERE_TOXICITY) + "\n" +
+    "Insult: " + formatAttributeScore(attributeScores?.INSULT) + "\n" +
+    "Profanity: " + formatAttributeScore(attributeScores?.PROFANITY) + "\n" +
+    "Threat: " + formatAttributeScore(attributeScores?.THREAT) + "\n" +
+    "Identity attack: " + formatAttributeScore(attributeScores?.IDENTITY_ATTACK)
+
+  return finalAttributeSet
 }
 
 export function formatAbuseTypes(abuseOject: AbuseObject[]): string {
@@ -256,7 +270,7 @@ export class PdfService {
       getTimePosted(String(entry.item.date)),
       entry.item.id_str,
       BORDER_COLUMN,
-      formatAttributeScore(entry.scores.TOXICITY),
+      formatAttributes(entry.scores),
       formatAbuseTypes(entry.item.abuse ? entry.item.abuse : []),
       // formatAttributeScore(entry.scores.SEVERE_TOXICITY),
       // formatAttributeScore(entry.scores.INSULT),

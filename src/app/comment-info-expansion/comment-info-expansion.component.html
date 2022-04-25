@@ -29,12 +29,12 @@
         </span>
       </div>
       <ng-container *ngIf="this.comment && this.comment.scores['TOXICITY']">
-        <div class="score">Score - {{formatScore(comment.scores['TOXICITY'])}}%</div>
-<!--        <div class="score">Severe Toxicity - {{formatScore(comment.scores['SEVERE_TOXICITY'])}}%</div>-->
-<!--        <div class="score">Insult - {{formatScore(comment.scores['INSULT'])}}%</div>-->
-<!--        <div class="score">Threat - {{formatScore(comment.scores['THREAT'])}}%</div>-->
-<!--        <div class="score">Profanity - {{formatScore(comment.scores['PROFANITY'])}}%</div>-->
-<!--        <div class="score">Identity Attack - {{formatScore(comment.scores['IDENTITY_ATTACK'])}}%</div>-->
+        <div class="score">Toxicity - {{formatScore(comment.scores['TOXICITY'])}}%</div>
+        <div class="score">Severe Toxicity - {{formatScore(comment.scores['SEVERE_TOXICITY'])}}%</div>
+        <div class="score">Insult - {{formatScore(comment.scores['INSULT'])}}%</div>
+        <div class="score">Threat - {{formatScore(comment.scores['THREAT'])}}%</div>
+        <div class="score">Profanity - {{formatScore(comment.scores['PROFANITY'])}}%</div>
+        <div class="score">Identity Attack - {{formatScore(comment.scores['IDENTITY_ATTACK'])}}%</div>
       </ng-container>
     </div>
     <div class="detailed-abuse-info" *ngIf="tweet && tweet.item && tweet.item.abuse">

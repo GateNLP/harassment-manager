@@ -32,14 +32,13 @@
       <div>{{getElkUsername()}}</div>
       <div>{{date}}</div>
     </div>
-
     <hr>
     <div class="summary-body">
       <div class="summary-label">Date Range:</div>
       <div>{{getDateRangeString()}}</div>
       <div class="summary-label">In reply to tweet:</div>
       <div>{{getElkTweetId()}}</div>
-      <div class="summary-label">Toxicity score:</div>
+      <div class="summary-label">Toxicity scores:</div>
       <div>{{computeReportSummary()}}</div>
       <div class="summary-label">Abuse types:</div>
       <div>{{getAbuseTypes()}}</div>
@@ -113,11 +112,16 @@
       </ng-container>
 
       <ng-container matColumnDef="toxicity">
-        <th mat-header-cell  class="small-col" *matHeaderCellDef> Toxicity (%) </th>
+        <th mat-header-cell  class="small-col" *matHeaderCellDef> Toxicity scores (%) </th>
         <td mat-cell [class.page-break-cell]="element.item.text === ''"
-                     class="small-col"
+                     class="large-col"
                      *matCellDef="let element">
-          {{formatAttributeScore(element.scores.TOXICITY)}}
+          Toxicity: {{formatAttributeScore(element.scores.TOXICITY)}}
+          Severe toxicity: {{formatAttributeScore(element.scores.SEVERE_TOXICITY)}}
+          Insult: {{formatAttributeScore(element.scores.INSULT)}}
+          Profanity: {{formatAttributeScore(element.scores.PROFANITY)}}
+          Threat: {{formatAttributeScore(element.scores.THREAT)}}
+          Identity Attack: {{formatAttributeScore(element.scores.IDENTITY_ATTACK)}}
         </td>
       </ng-container>
 <!--      <ng-container matColumnDef="severe toxicity">-->

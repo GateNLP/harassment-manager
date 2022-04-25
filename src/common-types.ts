@@ -33,7 +33,7 @@ export interface SocialMediaItem {
   hasImage?: boolean;
   verified?: boolean;
   abuse?: AbuseObject[];
-  persp_score?: number;
+  persp_data?: PerspectiveData;
 }
 
 export interface ScoredItem<T> {
@@ -171,7 +171,16 @@ export interface TweetObject {
   source?: string;
   hashtags?: string[];
   abuse?: AbuseObject[];
-  persp_score?: number
+  persp_data?: PerspectiveData;
+}
+
+export interface PerspectiveData {
+  persp_toxicity: number;
+  persp_severe_toxicity?: number;
+  persp_identity_attack?: number;
+  persp_insult?: number;
+  persp_profanity?: number;
+  persp_threat?: number;
 }
 
 interface TwitterUser {

@@ -132,11 +132,16 @@ export class ReviewReportComponent {
       sum += scores.TOXICITY;
       for (const [attr, score] of Object.entries(scores)) {
         if (score && score > TOXICITY_THRESHOLD) {
-          this.toxicityTypes.add(attr);
+          this.toxicityTypes.add(this.formatToxicityType(attr));
         }
       }
     }
     this.averageToxicity = sum / this.commentsForReport.length;
+  }
+
+  formatToxicityType(attr: string) : string{
+    let formattedString =  attr.toLowerCase().replace("_", " ")
+    return formattedString.charAt(0).toUpperCase() + formattedString.slice(1);
   }
 
   onContextInputChange() {

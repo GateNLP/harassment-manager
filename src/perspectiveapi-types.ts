@@ -28,10 +28,6 @@ export enum Attributes {
   IDENTITY_ATTACK = 'IDENTITY_ATTACK'
 }
 
-export enum GateAttributes {
-  TOXICITY = 'TOXICITY',
-}
-
 // Union type of all keys in Attributes.
 export type Attribute = keyof Attributes;
 
