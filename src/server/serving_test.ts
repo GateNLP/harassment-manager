@@ -118,6 +118,8 @@ describe('Server', () => {
         password: 'fake password',
         username: 'fake username',
       },
+      elkServerDefault: "fake-server",
+      elkServerMapping: []
     };
     server = new serving.Server(config);
     server.start().then(done);

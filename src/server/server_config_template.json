@@ -1,0 +1,18 @@
+{
+  "port": "3000",
+  "staticPath": "dist/harassment-manager",
+  "googleCloudApiKey": "enter your API key here",
+  "cloudProjectId": "enter your cloud project id here",
+  "twitterApiCredentials": {
+    "accountName": "",
+    "username": "",
+    "password": ""
+  },
+  "elkServerDefault": "default elastic endpoint to use for data collection",
+  "elkServerMapping": [
+    {"endpoint": "endpoint-here",
+      "indexNames": ["index-names-at-endpoint-here"],
+      "isDefault": "true if endpoint for this record matches <elkServerDefault> else false"
+    }
+  ]
+}

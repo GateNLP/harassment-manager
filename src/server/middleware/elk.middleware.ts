@@ -27,17 +27,18 @@ import {
 } from '../../common-types';
 
 // Max results per twitter call.
-const BATCH_SIZE = 500;
+const BATCH_SIZE = 1000;
 
 const {Client} = require('@elastic/elasticsearch')
 const client = new Client({node: "<elk-endpoint-here>"})
 
 export async function getElkTweets(
     req: Request,
-    res: Response
+    res: Response,
+    client: typeof Client
 ) {
     let twitterDataPromise: Promise<GetTweetsElkHits>;
-    twitterDataPromise = loadTwitterData(req.body);
+    twitterDataPromise = loadTwitterData(req.body,client);
 
     try {
         const twitterData = await twitterDataPromise;
@@ -50,12 +51,12 @@ export async function getElkTweets(
 }
 
 // todo: handle case of no hits!
-function loadTwitterData(request: GetTweetsElkRequest) : Promise<GetTweetsElkHits>{
+function loadTwitterData(request: GetTweetsElkRequest, client:typeof Client) : Promise<GetTweetsElkHits>{
     let query = handleQueryElement(request.filterQuery)
 
     return client.search({
         index: request.index,
-        size: 1000,
+        size: BATCH_SIZE,
         body: {
             query: {bool: {must: [], filter: [{bool: {filter: [
                 {bool: {filter: [{nested: {path: "entities.Abuse", query:

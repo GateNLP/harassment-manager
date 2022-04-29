@@ -54,6 +54,8 @@ import {
   muteTwitterUsers,
 } from './middleware/twitter.middleware';
 import {getElkTweets} from "./middleware/elk.middleware";
+import {map} from "rxjs";
+const {Client} = require('@elastic/elasticsearch')
 
 interface Logger {
   write(s: string): void;
@@ -70,6 +72,20 @@ export interface Config {
   cloudProjectId: string;
   isProduction: boolean;
   twitterApiCredentials: TwitterApiCredentials;
+  elkServerMapping: ElkServerMapping[];
+  elkServerDefault: string;
+}
+
+export interface ElkServerMapping {
+  indexNames: string[],
+  endpoint: string,
+  isDefault: boolean
+}
+
+export interface ElkClient {
+  client: typeof Client,
+  indexNames: string[],
+  isDefault: boolean,
 }
 
 export interface TwitterApiCredentials {
@@ -127,6 +143,10 @@ export class Server {
 
   private appCredentials: WebAppCredentials | null = null;
 
+  private elkClientPool: ElkClient[];
+
+  private defaultElkClient: typeof Client
+
   private log: Logger;
 
   constructor(public config: Config) {
@@ -138,6 +158,26 @@ export class Server {
           console.log(s);
         },
       };
+    }
+
+    //set up the elastic client pools
+    if(!this.config.elkServerDefault){
+      console.error("default elastic server must be specified in this config")
+    }
+
+    this.defaultElkClient = new Client({node: this.config.elkServerDefault})
+
+    this.elkClientPool = []
+    if (this.config.elkServerMapping) {
+      this.config.elkServerMapping.forEach(mapping => {
+        if(mapping.isDefault){
+          this.elkClientPool.push({client: this.defaultElkClient, indexNames: mapping.indexNames, isDefault: true})
+        }
+        else {
+          let elkClient = new Client({node: mapping.endpoint})
+          this.elkClientPool.push({client: elkClient, indexNames: mapping.indexNames, isDefault: false})
+        }
+      })
     }
 
     //todo: exposes secrets and passwords in log. maybe leave out for now
@@ -183,7 +223,9 @@ export class Server {
     });
 
     router.post('/get_elk_tweets', (req, res) =>{
-      getElkTweets(req, res)
+      let indexName = req.body.index
+      let client = this.selectElkClient(indexName)
+      getElkTweets(req, res, client)
     });
 
     router.post('/get_tweets', (req, res) => {
@@ -373,6 +415,14 @@ export class Server {
           });
       }
     );
+  }
+
+  public selectElkClient(indexName:string):typeof Client{
+    if(this.elkClientPool.length){
+      let clientRecord = this.elkClientPool.find(client=>client.indexNames.includes(indexName))
+      return clientRecord ? clientRecord.client : this.defaultElkClient
+    }
+    return this.defaultElkClient
   }
 
   createOAuthClient(
