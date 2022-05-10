@@ -33,6 +33,13 @@ learn more about how our machine learning models are trained.
 - [Deployment](docs/3_deployment.md) contains instructions on how to deploy the
   application
 
+## Altered development details for GATE version
+
+Currently here, available if logged in to USFD account: 
+https://docs.google.com/document/d/1f7nGOZ80zkrRUvrmvPyA9C_Y0WJI3WlwnsAOVwM4nfw/edit 
+
+To be written up in .md at some point.
+
 ## Support
 
 For any technical issues, please create an issue in this repository. For
