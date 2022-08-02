@@ -15,6 +15,7 @@
  */
 
 import {Request, Response} from 'express';
+import axios from "axios";
 import {
     ElkHits,
     GetTweetsElkResponse,
@@ -27,10 +28,10 @@ import {
 } from '../../common-types';
 
 // Max results per twitter call.
-const BATCH_SIZE = 1000;
+// const DASHBOARD_BACKEND_URL =   "http://localhost:7000";
+const DASHBOARD_BACKEND_URL =   "http://dashboards:7000/";
 
 const {Client} = require('@elastic/elasticsearch')
-const client = new Client({node: "<elk-endpoint-here>"})
 
 export async function getElkTweets(
     req: Request,
@@ -52,40 +53,24 @@ export async function getElkTweets(
 
 // todo: handle case of no hits!
 function loadTwitterData(request: GetTweetsElkRequest, client:typeof Client) : Promise<GetTweetsElkHits>{
-    let query = handleQueryElement(request.filterQuery)
 
-    return client.search({
-        index: request.index,
-        size: BATCH_SIZE,
-        body: {
-            query: {bool: {must: [], filter: [{bool: {filter: [
-                {bool: {filter: [{nested: {path: "entities.Abuse", query:
-                {bool: {should: [{match: {"entities.Abuse.target.keyword": "addressee"}}], minimum_should_match: 1}}, score_mode: "none"}},
-                {bool: {should: [{match: {"entities.Tweet.in_reply_to_screen_name": request.screen_name }}], minimum_should_match: 1}}]}},
-                {bool: {should: [{match_phrase: {"entities.Tweet.in_reply_to_status_id_str":  request.tweet_id}}], minimum_should_match: 1}},
-                {query_string: {query: query, default_field: "text", default_operator: "or", max_determinized_states: 10000}}
-                ]}},
-                {range: {
-                    "entities.Tweet.created_at": {
-                        "gte": request.fromDate,
-                        "lte": request.toDate,
-                        "format": "strict_date_optional_time"
-                    }
-                }}],
-                should: [],
-                must_not: []}}
-        }
-    }).then((response : GetTweetsElkResponse) => response.body.hits);
+    let query="";
 
-}
+    if (request.filterQuery) query=encodeURIComponent(request.filterQuery);
 
-function handleQueryElement(query: string | undefined): string {
-    if (query) {
-        query = query?.replace("#", "entities.Hashtag.string.keyword:#");
-        query = query?.replace("@", "entities.UserID.user:");
-        return query
-    }
-    return  "*"
+    let url = DASHBOARD_BACKEND_URL + request.screen_name + "/harassment/"+
+        request.tweet_id +"/?fromDate="+request.fromDate+"&toDate="+request.toDate+"&query="+query
+
+    return axios
+        .get<GetTweetsElkResponse>(url )
+        .then((response) => {
+           return response.data.hits})
+        .catch((error) => {
+            const errorStr =
+                `Error while fetching tweets with request ` +
+                `${JSON.stringify(request)}: ${error}`;
+            throw new Error(errorStr);
+        });
 }
 
 function parseTweet(tweetObj: ElkHits): Tweet {
@@ -95,10 +80,10 @@ function parseTweet(tweetObj: ElkHits): Tweet {
     // Firestore doesn't support writing nested arrays, so we have to
     // manually build the Tweet object to avoid accidentally including the nested
     // arrays in the TweetObject from the Twitter API response.
-    const tweetObject = tweetObj._source.entities.Tweet[0]
-    const abuseObject = tweetObj._source.entities.Abuse
+    const tweetObject = tweetObj.sourceAsMap.entities.Tweet[0]
+    const abuseObject = tweetObj.sourceAsMap.entities.Abuse
 
-    const hashtags = tweetObj._source.entities.Hashtag?.map(hashtag=>hashtag.string)
+    const hashtags = tweetObj.sourceAsMap.entities.Hashtag?.map(hashtag=>hashtag.string)
     abuseObject.forEach(abuse=>abuse.type = abuse.type?  abuse.type.charAt(0).toUpperCase() + abuse.type.slice(1) : abuse.type)
 
     const tweet: Tweet = {
@@ -117,21 +102,21 @@ function parseTweet(tweetObj: ElkHits): Tweet {
         retweet_count: tweetObject.retweet_count,
         retweeted_status: tweetObject.retweeted_status,
         source: tweetObject.source,
-        text: tweetObj._source.text,
+        text: tweetObj.sourceAsMap.text,
         truncated: tweetObject.truncated,
         url: `https://twitter.com/i/web/status/${tweetObject.id_str}`,
         user: tweetObject.user,
         abuse: abuseObject,
         hashtags: hashtags,
     };
-    if (tweetObj._source.persp_toxicity){
+    if (tweetObj.sourceAsMap.persp_toxicity){
         const perspData: PerspectiveData = {
-            persp_toxicity: tweetObj._source.persp_toxicity,
-            persp_severe_toxicity: tweetObj._source.persp_severe_toxicity,
-            persp_identity_attack: tweetObj._source.persp_identity_attack,
-            persp_insult: tweetObj._source.persp_insult,
-            persp_profanity: tweetObj._source.persp_profanity,
-            persp_threat: tweetObj._source.persp_threat
+            persp_toxicity: tweetObj.sourceAsMap.persp_toxicity,
+            persp_severe_toxicity: tweetObj.sourceAsMap.persp_severe_toxicity,
+            persp_identity_attack: tweetObj.sourceAsMap.persp_identity_attack,
+            persp_insult: tweetObj.sourceAsMap.persp_insult,
+            persp_profanity: tweetObj.sourceAsMap.persp_profanity,
+            persp_threat: tweetObj.sourceAsMap.persp_threat
         }
         tweet.persp_data = perspData
     }

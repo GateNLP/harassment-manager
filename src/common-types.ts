@@ -276,10 +276,6 @@ export interface GetTweetsElkRequest {
 }
 
 export interface GetTweetsElkResponse {
-  body: GetTweetsElkBody;
-}
-
-export interface GetTweetsElkBody {
   hits: GetTweetsElkHits;
 }
 
@@ -295,7 +291,7 @@ export interface  ElkTotal {
 }
 
 export  interface ElkHits {
-  _source: ElkSource;
+  sourceAsMap: ElkSource;
 }
 
 export interface ElkSource {
