@@ -211,9 +211,8 @@ import {HttpBaseInterceptor} from "./HttpBaseInterceptor";
         },
       },
     },
-    { provide: APP_BASE_HREF, useValue: '/' },
-    // { provide: APP_BASE_HREF, useValue: '/fcdo/harassment-manager/' },
-    // { provide: HTTP_INTERCEPTORS, useClass: HttpBaseInterceptor, multi: true }
+    { provide: APP_BASE_HREF, useValue: environment.baseHref },
+    { provide: HTTP_INTERCEPTORS, useClass: HttpBaseInterceptor, multi: true }
   ],
   bootstrap: [AppComponent],
 })
