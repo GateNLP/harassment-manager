@@ -29,17 +29,16 @@ import {
 
 // Max results per twitter call.
 // const DASHBOARD_BACKEND_URL =   "http://localhost:7000";
-const DASHBOARD_BACKEND_URL =   "http://dashboards:7000/";
 
 const {Client} = require('@elastic/elasticsearch')
 
 export async function getElkTweets(
     req: Request,
     res: Response,
-    client: typeof Client
+    dashboardEndpoint: string
 ) {
     let twitterDataPromise: Promise<GetTweetsElkHits>;
-    twitterDataPromise = loadTwitterData(req.body,client);
+    twitterDataPromise = loadTwitterData(req.body, dashboardEndpoint);
 
     try {
         const twitterData = await twitterDataPromise;
@@ -52,14 +51,14 @@ export async function getElkTweets(
 }
 
 // todo: handle case of no hits!
-function loadTwitterData(request: GetTweetsElkRequest, client:typeof Client) : Promise<GetTweetsElkHits>{
+function loadTwitterData(request: GetTweetsElkRequest, dashboardEndpoint: string) : Promise<GetTweetsElkHits>{
 
     let query="";
 
     if (request.filterQuery) query=encodeURIComponent(request.filterQuery);
 
-    let url = DASHBOARD_BACKEND_URL + request.screen_name + "/harassment/"+
-        request.tweet_id +"/?fromDate="+request.fromDate+"&toDate="+request.toDate+"&query="+query
+    let url = dashboardEndpoint + request.dashboard + "/harassment/"+
+        request.tweet_id +"?fromDate="+request.fromDate+"&toDate="+request.toDate+"&query="+query
 
     return axios
         .get<GetTweetsElkResponse>(url )
@@ -68,7 +67,7 @@ function loadTwitterData(request: GetTweetsElkRequest, client:typeof Client) : P
         .catch((error) => {
             const errorStr =
                 `Error while fetching tweets with request ` +
-                `${JSON.stringify(request)}: ${error}`;
+                `${url}: ${error}`;
             throw new Error(errorStr);
         });
 }

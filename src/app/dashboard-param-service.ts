@@ -50,7 +50,7 @@ export class DashboardParamService {
     toDate: "",
     tweetId: "",
     screenName: "",
-    index: "",
+    dashboard: "",
     filterQuery: ""
   }
 

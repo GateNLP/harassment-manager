@@ -38,9 +38,9 @@ export class WelcomePageComponent implements OnInit {
   // @ts-ignore
   screenName: string;
   // @ts-ignore
-  tweetId: string;
+  dashboard: string;
   // @ts-ignore
-  index: string;
+  tweetId: string;
   // @ts-ignore
   fromDate: string;
   // @ts-ignore
@@ -88,7 +88,7 @@ export class WelcomePageComponent implements OnInit {
       const dashboardParams = {
         tweetId : params.tweetId ? params.tweetId : "",
         screenName : params.screenName ? params.screenName : "",
-        index : params.index ? params.index : "",
+        dashboard : params.dashboard ? params.dashboard : "",
         fromDate : params.fromDate ? params.fromDate : "",
         toDate : params.toDate ? params.toDate : "",
         filterQuery : params.filterQuery ? params.filterQuery : "",

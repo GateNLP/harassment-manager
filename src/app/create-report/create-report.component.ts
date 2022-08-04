@@ -467,8 +467,7 @@ export class CreateReportComponent implements OnInit, AfterViewInit {
           this.dateFilter.startDateTimeMs,
           this.dateFilter.endDateTimeMs,
           dbParams.tweetId,
-          dbParams.screenName,
-          dbParams.index,
+          dbParams.dashboard,
           dbParams.filterQuery
       )
       .pipe(take(1))

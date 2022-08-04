@@ -71,6 +71,7 @@ export interface Config {
   googleCloudApiKey: string;
   cloudProjectId: string;
   isProduction: boolean;
+  dashboardEndpoint: string,
   twitterApiCredentials: TwitterApiCredentials;
   elkServerMapping: ElkServerMapping[];
   elkServerDefault: string;
@@ -161,6 +162,7 @@ export class Server {
     }
 
     //set up the elastic client pools
+    //leaving here so we can use them if we want to, even though requests are now sent to the dashboard
     if(!this.config.elkServerDefault){
       console.error("default elastic server must be specified in this config")
     }
@@ -223,9 +225,8 @@ export class Server {
     });
 
     router.post('/get_elk_tweets', (req, res) =>{
-      let indexName = req.body.index
-      let client = this.selectElkClient(indexName)
-      getElkTweets(req, res, client)
+      let dashboardEndpoint = this.config.dashboardEndpoint
+      getElkTweets(req, res, dashboardEndpoint)
     });
 
     router.post('/get_tweets', (req, res) => {

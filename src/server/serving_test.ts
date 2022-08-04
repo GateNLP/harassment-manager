@@ -111,6 +111,7 @@ describe('Server', () => {
       googleCloudApiKey: 'foo',
       cloudProjectId: 'fake project id',
       isProduction: false,
+      dashboardEndpoint: "fake endpoint",
       twitterApiCredentials: {
         accountName: 'fake name',
         appKey: 'fake key',

@@ -308,7 +308,7 @@ export class HomePageGateComponent implements AfterViewInit, OnDestroy {
     const dateFilter = setDateFilter(dbParams.fromDate, dbParams.toDate);
     this.loadingRecommendedReports = true;
     this.socialMediaItemService
-      .fetchItemsGate(dateFilter.startDateTimeMs, dateFilter.endDateTimeMs, dbParams.tweetId, dbParams.screenName, dbParams.index, dbParams.filterQuery)
+      .fetchItemsGate(dateFilter.startDateTimeMs, dateFilter.endDateTimeMs, dbParams.tweetId, dbParams.dashboard, dbParams.filterQuery)
       .subscribe(
         comments => {
           this.closeLoadingDialog();

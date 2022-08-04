@@ -143,8 +143,7 @@ export class SocialMediaItemService {
       startDateTimeMs: number,
       endDateTimeMs: number,
       id: string,
-      screenName: string,
-      index: string,
+      dashboard: string,
       filterQuery: string
   ): Observable<Array<ScoredItem<SocialMediaItem>>> {
 
@@ -154,7 +153,7 @@ export class SocialMediaItemService {
       return this.requestCache[cacheKey];
     }
 
-    const result = this.fetchTweetsGate(startDateTimeMs, endDateTimeMs, id, screenName, index, filterQuery).pipe(
+    const result = this.fetchTweetsGate(startDateTimeMs, endDateTimeMs, id, dashboard, filterQuery).pipe(
         switchMap((items: SocialMediaItem[]) => {
           this.totalCommentFetchCount += items.length
           return this.scoreItemsGate(items);
@@ -175,8 +174,7 @@ export class SocialMediaItemService {
       startDateTimeMs: number,
       endDateTimeMs: number,
       tweetId: string,
-      screenName: string,
-      index: string,
+      dashboard: string,
       filterQuery: string
   ): Observable<Tweet[]> {
     return from(
@@ -184,8 +182,7 @@ export class SocialMediaItemService {
           fromDate: formatTime(startDateTimeMs),
           toDate: formatTime(endDateTimeMs),
           tweet_id: tweetId,
-          screen_name: screenName,
-          index: index,
+          dashboard: dashboard,
           filterQuery: filterQuery
         })
     ).pipe(map((response: GetTweetsResponse) => response.tweets));
