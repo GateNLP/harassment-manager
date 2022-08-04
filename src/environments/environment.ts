@@ -20,6 +20,7 @@
 
 export const environment = {
   production: false,
+  baseHref: "your base href here",
   firebase: {
     apiKey: '{YOUR_API_KEY}',
     authDomain: 'yourproject.firebaseapp.com',

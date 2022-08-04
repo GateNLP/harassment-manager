@@ -16,6 +16,7 @@
 
 export const environment = {
   production: true,
+  baseHref: "base href here",
   firebase: {
     apiKey: '{YOUR_API_KEY}',
     authDomain: 'yourproject.firebaseapp.com',
@@ -27,3 +28,4 @@ export const environment = {
     measurementId: '{YOUR_MEASUREMENT_ID}',
   },
 };
+
