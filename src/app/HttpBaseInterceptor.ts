@@ -9,7 +9,7 @@ export class HttpBaseInterceptor implements HttpInterceptor {
         if(environment.baseHref === "/"){
             return next.handle(req)
         }
-        const url = environment.baseHref;
+        const url = environment.baseHref.endsWith("/") ? environment.baseHref.slice(0, environment.baseHref.length-1) : environment.baseHref
         req = req.clone({
             url: url + req.url
         });
