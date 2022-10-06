@@ -266,6 +266,6 @@ function formatTimestamp(ms: number): string {
 
 function formatTime(ms: number): string{
   const date = new Date(ms)
-  return date.toISOString()
+  return date.toISOString().split("T")[0]
 }
 
