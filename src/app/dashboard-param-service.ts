@@ -51,7 +51,8 @@ export class DashboardParamService {
     tweetId: "",
     screenName: "",
     dashboard: "",
-    filterQuery: ""
+    searchQuery: "",
+    filterId: 0
   }
 
   constructor() {

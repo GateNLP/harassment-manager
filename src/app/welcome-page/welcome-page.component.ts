@@ -46,7 +46,9 @@ export class WelcomePageComponent implements OnInit {
   // @ts-ignore
   toDate: string;
   // @ts-ignore
-  filterQuery: string;
+  searchQuery: string;
+  // @ts-ignore
+  filterId: string;
 
   constructor(
     private firestoreService: FirestoreService,
@@ -91,7 +93,9 @@ export class WelcomePageComponent implements OnInit {
         dashboard : params.dashboard ? params.dashboard : "",
         fromDate : params.fromDate ? params.fromDate : "",
         toDate : params.toDate ? params.toDate : "",
-        filterQuery : params.filterQuery ? params.filterQuery : "",
+        searchQuery : params.searchQuery ? params.searchQuery : "",
+        filterId : params.filterId ? params.filterId : "",
+
       }
       this.dashboardParamService.setDashboardParams(dashboardParams)
     });

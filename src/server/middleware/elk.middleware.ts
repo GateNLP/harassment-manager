@@ -53,12 +53,13 @@ export async function getElkTweets(
 // todo: handle case of no hits!
 function loadTwitterData(request: GetTweetsElkRequest, dashboardEndpoint: string) : Promise<GetTweetsElkHits>{
 
-    let query="";
+    let searchQuery="";
 
-    if (request.filterQuery) query=encodeURIComponent(request.filterQuery);
+    if (request.searchQuery) searchQuery=encodeURIComponent(request.searchQuery);
 
     let url = dashboardEndpoint + request.dashboard + "/harassment/"+
-        request.tweet_id +"?fromDate="+request.fromDate+"&toDate="+request.toDate+"&query="+query
+        request.tweet_id +"?fromDate="+request.fromDate+"&toDate="+request.toDate+"&searchQuery="+searchQuery
+         +"&filterId="+request.filterId
 
     return axios
         .get<GetTweetsElkResponse>(url )

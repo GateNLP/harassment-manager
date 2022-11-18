@@ -18,6 +18,7 @@ import { SafeUrl } from '@angular/platform-browser';
 import firebase from 'firebase/compat/app';
 import { Credentials } from 'google-auth-library';
 import { AttributeSummaryScores } from './perspectiveapi-types';
+import {integer} from "@elastic/elasticsearch/api/types";
 
 export interface SocialMediaItem {
   // Note: Matches id field name from TweetObject for easier casting between
@@ -261,7 +262,8 @@ export interface DashboardParams {
   screenName: string,
   tweetId: string,
   dashboard: string,
-  filterQuery: string
+  searchQuery: string,
+  filterId: number
 }
 
 /*GATE ELK INTERFACES*/
@@ -271,7 +273,8 @@ export interface GetTweetsElkRequest {
   fromDate: string; // yyyymmddhhmm format is expected here.
   toDate: string; // yyyymmddhhmm format is expected here.
   tweet_id: string,
-  filterQuery?: string
+  searchQuery?: string,
+  filterId?: number
 }
 
 export interface GetTweetsElkResponse {

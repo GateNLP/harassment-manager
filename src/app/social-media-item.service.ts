@@ -37,6 +37,7 @@ import { PerspectiveApiService } from './perspectiveapi.service';
 import { TwitterApiService } from './twitter_api.service';
 import {TwitterElkApiService} from "./twitter_elk_api.service";
 import {Attributes, AttributeSummaryScores} from "../perspectiveapi-types";
+import {integer} from "@elastic/elasticsearch/api/types";
 
 export interface RequestCache {
   // The key to the cache is startDateTimeMs + '_' + endDateTimeMs.
@@ -144,7 +145,8 @@ export class SocialMediaItemService {
       endDateTimeMs: number,
       id: string,
       dashboard: string,
-      filterQuery: string
+      searchQuery: string,
+      filterId:number
   ): Observable<Array<ScoredItem<SocialMediaItem>>> {
 
     const firstLoad = Object.keys(this.requestCache).length === 0;
@@ -153,7 +155,7 @@ export class SocialMediaItemService {
       return this.requestCache[cacheKey];
     }
 
-    const result = this.fetchTweetsGate(startDateTimeMs, endDateTimeMs, id, dashboard, filterQuery).pipe(
+    const result = this.fetchTweetsGate(startDateTimeMs, endDateTimeMs, id, dashboard, searchQuery, filterId).pipe(
         switchMap((items: SocialMediaItem[]) => {
           this.totalCommentFetchCount += items.length
           return this.scoreItemsGate(items);
@@ -175,15 +177,17 @@ export class SocialMediaItemService {
       endDateTimeMs: number,
       tweetId: string,
       dashboard: string,
-      filterQuery: string
-  ): Observable<Tweet[]> {
+      searchQuery: string,
+      filterId: number
+): Observable<Tweet[]> {
     return from(
         this.twitterElkApiService.getTweets({
           fromDate: formatTime(startDateTimeMs),
           toDate: formatTime(endDateTimeMs),
           tweet_id: tweetId,
           dashboard: dashboard,
-          filterQuery: filterQuery
+          searchQuery: searchQuery,
+          filterId: filterId
         })
     ).pipe(map((response: GetTweetsResponse) => response.tweets));
   }
